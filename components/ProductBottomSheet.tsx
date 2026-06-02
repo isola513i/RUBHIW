@@ -1,36 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { ProductImage } from "@/components/ProductImage";
 import type { Product } from "@/data/products";
-
+import { formatPrice, getStatusClasses, productColors } from "@/lib/product-ui";
 type ProductBottomSheetProps = {
   product: Product | null;
   onClose: () => void;
-};
-
-const productColors = ["#F3D8CF", "#C9D7C8", "#F6E3A9", "#D6C8E3", "#E9CFC5"];
-
-const formatPrice = (value: number) =>
-  new Intl.NumberFormat("th-TH", {
-    style: "currency",
-    currency: "THB",
-    maximumFractionDigits: 0,
-  }).format(value);
-
-const getStatusClasses = (status: string) => {
-  switch (status.trim().toLowerCase()) {
-    case "in stock":
-      return "bg-[#D9F0D8] text-[#1E7A35]";
-    case "pre-order":
-    case "preorder":
-      return "bg-[#D9EAF8] text-[#2D6EA8]";
-    case "out of stock":
-      return "bg-[#B90F0A] text-white";
-    case "hidden":
-      return "bg-stone-200 text-stone-600";
-    default:
-      return "bg-beige/55 text-ink";
-  }
 };
 
 export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps) {
@@ -79,24 +55,17 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
             <>
               <div className="max-h-[78vh] overflow-y-auto px-5 pb-36 pt-4">
                 <div className="overflow-hidden rounded-[24px] border border-beige/50 bg-cream shadow-soft">
-                  {product.image_url ? (
-                    <img
-                      className="aspect-square w-full object-cover"
-                      src={product.image_url}
-                      alt={`${product.brand} ${product.name}`}
-                    />
-                  ) : (
-                    <div
-                      className="product-art aspect-square w-full"
-                      style={{ "--package": packageColor } as React.CSSProperties}
-                      role="img"
-                      aria-label={`${product.brand} ${product.name}`}
-                    />
-                  )}
+                  <ProductImage
+                    src={product.image_url}
+                    alt={`${product.brand} ${product.name}`}
+                    className="aspect-square w-full object-cover"
+                    fallbackClassName="product-art aspect-square w-full"
+                    packageColor={packageColor}
+                  />
                 </div>
 
                 <div className="mt-5 space-y-3">
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">{product.brand}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-ink/70">{product.brand}</p>
                   <h2 className="text-2xl font-semibold leading-tight text-ink">{product.name}</h2>
                   <span
                     className={`inline-flex rounded-full px-3 py-1.5 text-xs font-medium ${getStatusClasses(product.status)}`}

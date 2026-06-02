@@ -17,7 +17,7 @@ const slides = [
     eyebrow: "Fresh arrival",
     title: "Discover curated Korean skincare for daily routines.",
     cta: "Shop now",
-    imageSrc: "/image/hero.png",
+    imageSrc: "/image/hero.jpg",
     imageAlt: "RUBHIW Korean beauty collection",
   },
 ];

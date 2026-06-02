@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rubhiw.vercel.app";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3001"),
+  metadataBase: new URL(siteUrl),
   title: "RUBHIW",
   description: "RUBHIW mobile-first catalog for Korean imported goods and pre-orders.",
   applicationName: "RUBHIW",

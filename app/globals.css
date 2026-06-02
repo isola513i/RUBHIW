@@ -8,6 +8,14 @@
   --blue: #aec6cf;
   --ink: #4a433b;
   --muted: #8c847a;
+  --status-stock-bg: #d9f0d8;
+  --status-stock-text: #1e7a35;
+  --status-preorder-bg: #d9eaf8;
+  --status-preorder-text: #2d6ea8;
+  --status-oos-bg: #b90f0a;
+  --status-oos-text: #fdfbf7;
+  --status-hidden-bg: #e7e5e4;
+  --status-hidden-text: #78716c;
 }
 
 html {
