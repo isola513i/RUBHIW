@@ -1,6 +1,7 @@
 node_modules/
 .next/
 .vercel/
+.serena/
 next-dev.log
 next-dev.err.log
 .env
