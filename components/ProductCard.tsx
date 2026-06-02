@@ -5,6 +5,7 @@ const productColors = ["#F3D8CF", "#C9D7C8", "#F6E3A9", "#D6C8E3", "#E9CFC5"];
 type ProductCardProps = {
   product: Product;
   index: number;
+  onSelect: (product: Product) => void;
 };
 
 const formatPrice = (value: number) =>
@@ -30,13 +31,18 @@ const getStatusClasses = (status: string) => {
   }
 };
 
-export function ProductCard({ product, index }: ProductCardProps) {
+export function ProductCard({ product, index, onSelect }: ProductCardProps) {
   const packageColor = productColors[index % productColors.length];
   const displayPrice = product.price_sale ?? product.price_full;
   const statusClasses = getStatusClasses(product.status);
 
   return (
-    <article className="rounded-2xl border border-beige/55 bg-cream p-3 shadow-soft" data-sku={product.id}>
+    <button
+      type="button"
+      className="w-full cursor-pointer rounded-2xl border border-beige/55 bg-cream p-3 text-left shadow-soft transition-transform duration-200 active:scale-95"
+      data-sku={product.id}
+      onClick={() => onSelect(product)}
+    >
       <div
         className="product-art aspect-square rounded-2xl"
         style={{ "--package": packageColor } as React.CSSProperties}
@@ -56,6 +62,6 @@ export function ProductCard({ product, index }: ProductCardProps) {
           ) : null}
         </div>
       </div>
-    </article>
+    </button>
   );
 }

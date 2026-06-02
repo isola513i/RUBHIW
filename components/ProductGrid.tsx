@@ -3,9 +3,10 @@ import { ProductCard } from "@/components/ProductCard";
 
 type ProductGridProps = {
   products: Product[];
+  onSelectProduct: (product: Product) => void;
 };
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({ products, onSelectProduct }: ProductGridProps) {
   return (
     <section className="mt-0">
       <div className="mb-4">
@@ -18,7 +19,7 @@ export function ProductGrid({ products }: ProductGridProps) {
       {products.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+            <ProductCard key={product.id} product={product} index={index} onSelect={onSelectProduct} />
           ))}
         </div>
       ) : (
