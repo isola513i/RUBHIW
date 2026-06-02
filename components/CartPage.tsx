@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import { useCart } from "@/components/CartProvider";
 import { Header } from "@/components/Header";
 import { ProductImage } from "@/components/ProductImage";
-import type { CartItemInput, CartSummary } from "@/lib/cart";
+import type { CartSummary } from "@/lib/cart";
 import { formatPrice, productColors } from "@/lib/product-ui";
-
-const CART_STORAGE_KEY = "rubhiw-cart";
 
 const emptyCart: CartSummary = {
   lines: [],
@@ -15,29 +14,11 @@ const emptyCart: CartSummary = {
   subtotal: 0,
 };
 
-const readStoredItems = (): CartItemInput[] => {
-  try {
-    const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
-    return rawCart ? JSON.parse(rawCart) : [];
-  } catch {
-    return [];
-  }
-};
-
-const writeStoredItems = (items: CartItemInput[]) => {
-  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-  window.dispatchEvent(new Event("rubhiw-cart-updated"));
-};
-
 export function CartPage() {
-  const [items, setItems] = useState<CartItemInput[]>([]);
+  const { clearCart, items, updateQuantity } = useCart();
   const [cart, setCart] = useState<CartSummary>(emptyCart);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    setItems(readStoredItems());
-  }, []);
 
   useEffect(() => {
     let isCurrent = true;
@@ -81,22 +62,8 @@ export function CartPage() {
     };
   }, [items]);
 
-  const cargoFee = useMemo(() => (cart.itemCount > 0 ? 0 : 0), [cart.itemCount]);
+  const cargoFee = 0;
   const total = cart.subtotal + cargoFee;
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    const nextItems = items
-      .map((item) => (item.productId === productId ? { ...item, quantity: Math.max(quantity, 0) } : item))
-      .filter((item) => item.quantity > 0);
-
-    setItems(nextItems);
-    writeStoredItems(nextItems);
-  };
-
-  const clearCart = () => {
-    setItems([]);
-    writeStoredItems([]);
-  };
 
   return (
     <main className="mx-auto min-h-screen max-w-md px-5 pb-28">
@@ -128,13 +95,13 @@ export function CartPage() {
             return (
               <article
                 key={line.product.id}
-                className="grid grid-cols-[5.5rem_1fr] gap-4 rounded-[28px] border border-beige/55 bg-white p-3 shadow-[0_14px_34px_rgba(74,67,59,0.08)]"
+                className="grid grid-cols-[6.25rem_1fr] gap-4 rounded-[28px] border border-beige/55 bg-white p-3 shadow-[0_14px_34px_rgba(74,67,59,0.08)]"
               >
-                <div className="overflow-hidden rounded-[22px] border border-beige/40 bg-cream">
+                <div className="grid aspect-square place-items-center overflow-hidden rounded-[22px] border border-beige/40 bg-cream">
                   <ProductImage
                     src={line.product.image_url}
                     alt={`${line.product.brand} ${line.product.name}`}
-                    className="aspect-square w-full object-cover"
+                    className="h-full w-full origin-center scale-[1.45] object-cover object-center"
                     fallbackClassName="product-art aspect-square w-full"
                     packageColor={packageColor}
                   />

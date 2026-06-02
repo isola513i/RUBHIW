@@ -9,11 +9,10 @@ type ProductGridProps = {
 export function ProductGrid({ products, onSelectProduct }: ProductGridProps) {
   return (
     <section className="mt-5 sm:mt-8">
-      <div className="mb-4 sm:mb-5">
-        <div className="space-y-1">
-          <p className="text-xs font-semibold tracking-[-0.01em] text-muted sm:uppercase sm:tracking-[0.16em]">Popular picks</p>
-          <h2 className="text-[1.35rem] font-semibold leading-tight tracking-[-0.04em] text-ink sm:text-xl">Ready for preorder</h2>
-        </div>
+      <div className="mb-5 sm:mb-6">
+        <h2 className="text-[1.65rem] font-semibold leading-none tracking-[-0.055em] text-ink sm:text-[1.85rem]">
+          Popular Picks
+        </h2>
       </div>
 
       {products.length > 0 ? (

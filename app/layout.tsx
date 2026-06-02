@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
+import { Prompt } from "next/font/google";
+import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rubhiw.vercel.app";
+
+const prompt = Prompt({
+  subsets: ["latin", "thai"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-prompt",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -26,7 +35,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-sans antialiased">{children}</body>
+      <body className={`${prompt.variable} font-sans antialiased`}>
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }

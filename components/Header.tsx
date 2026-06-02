@@ -2,31 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { ChevronRight, Menu, Search, ShoppingBag, X } from "lucide-react";
+import { useCart } from "@/components/CartProvider";
 
 const primaryLinks = ["All", "Skincare", "Makeup", "Snacks", "Pre-order"];
 const supportLinks = ["Track order", "Shipping status", "Member rewards"];
 const popularSearches = ["anua", "laneige", "rom&nd", "mixsoon", "torriden", "samyang", "jelly", "sunscreen"];
-const CART_STORAGE_KEY = "rubhiw-cart";
-
-const getCartItemCount = () => {
-  try {
-    const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
-    const cartItems = rawCart ? JSON.parse(rawCart) : [];
-
-    if (!Array.isArray(cartItems)) {
-      return 0;
-    }
-
-    return cartItems.reduce((total, item) => total + Math.max(Number(item?.quantity) || 0, 0), 0);
-  } catch {
-    return 0;
-  }
-};
 
 export function Header() {
+  const { itemCount, pulseKey } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     document.body.style.overflow = isMenuOpen || isSearchOpen ? "hidden" : "";
@@ -35,19 +20,6 @@ export function Header() {
       document.body.style.overflow = "";
     };
   }, [isMenuOpen, isSearchOpen]);
-
-  useEffect(() => {
-    const updateCartItemCount = () => setCartItemCount(getCartItemCount());
-
-    updateCartItemCount();
-    window.addEventListener("storage", updateCartItemCount);
-    window.addEventListener("rubhiw-cart-updated", updateCartItemCount);
-
-    return () => {
-      window.removeEventListener("storage", updateCartItemCount);
-      window.removeEventListener("rubhiw-cart-updated", updateCartItemCount);
-    };
-  }, []);
 
   return (
     <>
@@ -75,9 +47,12 @@ export function Header() {
           </button>
           <a className="relative grid h-10 w-10 place-items-center rounded-full" href="/bag" aria-label="Shopping bag">
             <ShoppingBag className="h-5 w-5" strokeWidth={2.1} />
-            {cartItemCount > 0 ? (
-              <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-blue px-1 text-[10px] font-semibold leading-none text-ink">
-                {cartItemCount > 9 ? "9+" : cartItemCount}
+            {itemCount > 0 ? (
+              <span
+                key={pulseKey}
+                className="cart-badge-pop absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-blue px-1 text-[10px] font-semibold leading-none text-ink"
+              >
+                {itemCount > 9 ? "9+" : itemCount}
               </span>
             ) : null}
           </a>

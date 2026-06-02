@@ -43,6 +43,24 @@ a {
   display: none;
 }
 
+.cart-badge-pop {
+  animation: cart-badge-pop 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes cart-badge-pop {
+  0% {
+    transform: scale(0.78);
+  }
+
+  45% {
+    transform: scale(1.28);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 .product-art {
   position: relative;
   overflow: hidden;
@@ -83,4 +101,45 @@ a {
   box-shadow:
     inset 0 1px 0 rgba(74, 67, 59, 0.12),
     0 14px 20px rgba(74, 67, 59, 0.1);
+}
+
+.product-detail-art {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(253, 251, 247, 0.98), transparent 38%),
+    linear-gradient(145deg, rgba(240, 231, 220, 0.9), rgba(220, 208, 194, 0.86));
+}
+
+.product-detail-art::before {
+  content: "";
+  position: absolute;
+  left: 31%;
+  right: 31%;
+  top: 20%;
+  bottom: 10%;
+  border-radius: 12px 12px 18px 18px / 40px 40px 16px 16px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.76), transparent 20%, rgba(74, 67, 59, 0.08) 82%),
+    linear-gradient(180deg, color-mix(in srgb, var(--package) 35%, #ffffff), #fbfaf7 66%, color-mix(in srgb, var(--package) 22%, #ffffff));
+  box-shadow:
+    inset 0 18px 18px rgba(255, 255, 255, 0.64),
+    inset 0 -18px 24px rgba(74, 67, 59, 0.08),
+    0 28px 42px rgba(74, 67, 59, 0.14);
+}
+
+.product-detail-art::after {
+  content: "";
+  position: absolute;
+  left: 34%;
+  right: 34%;
+  bottom: 8%;
+  height: 11%;
+  border-radius: 8px 8px 14px 14px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.58), transparent 70%),
+    linear-gradient(180deg, #fdfbf7, color-mix(in srgb, var(--package) 28%, #ffffff));
+  box-shadow:
+    inset 0 1px 0 rgba(74, 67, 59, 0.12),
+    0 16px 22px rgba(74, 67, 59, 0.1);
 }

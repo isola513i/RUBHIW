@@ -1,6 +1,6 @@
 import type { Product } from "@/data/products";
 import { ProductImage } from "@/components/ProductImage";
-import { formatPrice, getStatusClasses, productColors } from "@/lib/product-ui";
+import { formatPrice, getBrandChipClasses, getStatusClasses, productColors } from "@/lib/product-ui";
 
 type ProductCardProps = {
   product: Product;
@@ -12,10 +12,7 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
   const packageColor = productColors[index % productColors.length];
   const displayPrice = product.price_sale ?? product.price_full;
   const statusClasses = getStatusClasses(product.status);
-  const discountPercentage =
-    product.price_sale !== null && product.price_full > 0
-      ? Math.round(((product.price_full - product.price_sale) / product.price_full) * 100)
-      : null;
+  const brandChipClasses = getBrandChipClasses(product.brand);
 
   return (
     <button
@@ -25,11 +22,6 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
       onClick={() => onSelect(product)}
     >
       <div className="relative overflow-hidden border-b border-[#EEE8DE] bg-[radial-gradient(circle_at_50%_46%,#FFFFFF_0%,#FAF8F3_58%,#F4EFE7_100%)]">
-        {discountPercentage !== null ? (
-          <span className="absolute left-4 top-4 z-10 inline-flex rounded-2xl border border-[#F2D8D5] bg-[#FBEAEA]/90 px-3 py-2 text-sm font-semibold text-[#B93C35] shadow-[0_10px_24px_rgba(185,60,53,0.12)] backdrop-blur">
-            -{discountPercentage}%
-          </span>
-        ) : null}
         <ProductImage
           src={product.image_url}
           alt={`${product.brand} ${product.name}`}
@@ -38,18 +30,27 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
           packageColor={packageColor}
         />
       </div>
-      <div className="space-y-3 px-4 pb-4 pt-4 sm:space-y-4 sm:px-5 sm:pb-6 sm:pt-5">
-        <div className="space-y-2 sm:space-y-3">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#747B84] sm:text-[11px]">{product.brand}</p>
-          <h3 className="min-h-[2rem] text-[15px] font-semibold leading-tight tracking-[-0.02em] text-[#08111F] sm:min-h-[2.25rem] sm:text-[16px]">
-            {product.name}
-          </h3>
+      <div className="flex min-h-[10.4rem] flex-col px-4 pb-4 pt-4 sm:min-h-[11.25rem] sm:px-5 sm:pb-5 sm:pt-5">
+        <div className="flex w-full items-center justify-between gap-2">
+          <span
+            className={`inline-flex min-w-0 max-w-[56%] truncate rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] sm:text-[10px] ${brandChipClasses}`}
+          >
+            {product.brand}
+          </span>
+          <span
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-medium leading-none sm:px-2.5 sm:text-[11px] ${statusClasses}`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" />
+            {product.status}
+          </span>
         </div>
-        <span className={`inline-flex w-fit items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-medium sm:px-3 sm:text-[13px] ${statusClasses}`}>
-          <span className="h-2 w-2 rounded-full bg-current opacity-80" />
-          {product.status}
-        </span>
-        <div className="flex items-end gap-3 pt-0.5 sm:gap-4 sm:pt-1">
+        <h3 className="mt-3 min-h-[2.15rem] text-base font-semibold leading-tight tracking-[-0.025em] text-[#08111F] sm:text-[17px]">
+          {product.name}
+        </h3>
+        <p className="mt-1 line-clamp-1 text-[12px] font-medium leading-5 text-muted sm:text-[13px]">
+          {product.description || "Product details will be updated soon."}
+        </p>
+        <div className="mt-auto flex items-end gap-3 pt-2 sm:gap-4 sm:pt-3">
           <p className="text-[25px] font-semibold leading-none tracking-[-0.055em] text-[#08111F] sm:text-[30px]">
             {formatPrice(displayPrice)}
           </p>

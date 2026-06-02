@@ -20,7 +20,7 @@ const config: Config = {
         soft: "0 4px 20px rgba(74, 67, 59, 0.05)",
       },
       fontFamily: {
-        sans: ["Inter", "Noto Sans Thai", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-prompt)", "Prompt", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },
