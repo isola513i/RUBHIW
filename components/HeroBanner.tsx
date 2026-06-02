@@ -35,8 +35,8 @@ export function HeroBanner() {
 
   return (
     <section className="mt-3">
-      <div className="relative overflow-hidden rounded-[24px] border border-beige/50 bg-[#F7EFE4] shadow-soft">
-        <div className="relative aspect-[16/10] w-full sm:aspect-[16/9]">
+      <div className="relative overflow-hidden rounded-[22px] border border-beige/50 bg-[#F7EFE4] shadow-soft sm:rounded-[24px]">
+        <div className="relative aspect-[16/8.4] w-full sm:aspect-[16/9]">
           {slides.map((slide, index) => {
             const isActive = index === activeSlide;
 
@@ -55,12 +55,12 @@ export function HeroBanner() {
                   className="object-cover object-right-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-[rgba(74,67,59,0.32)] to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/30 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5 pb-10">
-                  <div className="max-w-[14rem]">
-                    <p className="text-sm font-medium text-[#F6EEE4]">{slide.eyebrow}</p>
-                    <h2 className="mt-2 text-[1.45rem] font-semibold leading-tight text-white">{slide.title}</h2>
-                    <button className="mt-5 rounded-2xl bg-cream/95 px-5 py-3 text-sm font-semibold text-[#5A5249] shadow-soft">
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/30 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 pb-8 sm:p-5 sm:pb-10">
+                  <div className="max-w-[12.5rem] sm:max-w-[14rem]">
+                    <p className="text-xs font-medium text-[#F6EEE4] sm:text-sm">{slide.eyebrow}</p>
+                    <h2 className="mt-1.5 text-[1.28rem] font-semibold leading-tight text-white sm:mt-2 sm:text-[1.45rem]">{slide.title}</h2>
+                    <button className="mt-3 rounded-2xl bg-cream/95 px-4 py-2.5 text-sm font-semibold text-[#5A5249] shadow-soft sm:mt-5 sm:px-5 sm:py-3">
                       {slide.cta}
                     </button>
                   </div>

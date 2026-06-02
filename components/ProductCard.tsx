@@ -20,7 +20,7 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
   return (
     <button
       type="button"
-      className="group w-full cursor-pointer overflow-hidden rounded-[30px] border border-white/80 bg-white text-left shadow-[0_22px_55px_rgba(74,67,59,0.10)] transition duration-300 active:scale-[0.98] sm:hover:-translate-y-1 sm:hover:shadow-[0_30px_70px_rgba(74,67,59,0.13)]"
+      className="group w-full cursor-pointer overflow-hidden rounded-[24px] border border-white/80 bg-white text-left shadow-[0_16px_38px_rgba(74,67,59,0.09)] transition duration-300 active:scale-[0.98] sm:rounded-[30px] sm:shadow-[0_22px_55px_rgba(74,67,59,0.10)] sm:hover:-translate-y-1 sm:hover:shadow-[0_30px_70px_rgba(74,67,59,0.13)]"
       data-sku={product.id}
       onClick={() => onSelect(product)}
     >
@@ -33,24 +33,24 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
         <ProductImage
           src={product.image_url}
           alt={`${product.brand} ${product.name}`}
-          className="aspect-[1/1.22] w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-          fallbackClassName="product-art aspect-[1/1.22] w-full"
+          className="aspect-[1/0.92] w-full object-cover transition duration-500 group-hover:scale-[1.04] sm:aspect-[1/1.22]"
+          fallbackClassName="product-art aspect-[1/0.92] w-full sm:aspect-[1/1.22]"
           packageColor={packageColor}
         />
       </div>
-      <div className="space-y-4 px-5 pb-6 pt-5">
-        <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#747B84]">{product.brand}</p>
-          <h3 className="min-h-[2.25rem] text-[16px] font-semibold leading-tight tracking-[-0.02em] text-[#08111F]">
+      <div className="space-y-3 px-4 pb-4 pt-4 sm:space-y-4 sm:px-5 sm:pb-6 sm:pt-5">
+        <div className="space-y-2 sm:space-y-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#747B84] sm:text-[11px]">{product.brand}</p>
+          <h3 className="min-h-[2rem] text-[15px] font-semibold leading-tight tracking-[-0.02em] text-[#08111F] sm:min-h-[2.25rem] sm:text-[16px]">
             {product.name}
           </h3>
         </div>
-        <span className={`inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-[13px] font-medium ${statusClasses}`}>
+        <span className={`inline-flex w-fit items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-medium sm:px-3 sm:text-[13px] ${statusClasses}`}>
           <span className="h-2 w-2 rounded-full bg-current opacity-80" />
           {product.status}
         </span>
-        <div className="flex items-end gap-4 pt-1">
-          <p className="text-[30px] font-semibold leading-none tracking-[-0.055em] text-[#08111F]">
+        <div className="flex items-end gap-3 pt-0.5 sm:gap-4 sm:pt-1">
+          <p className="text-[25px] font-semibold leading-none tracking-[-0.055em] text-[#08111F] sm:text-[30px]">
             {formatPrice(displayPrice)}
           </p>
           {product.price_sale !== null ? (

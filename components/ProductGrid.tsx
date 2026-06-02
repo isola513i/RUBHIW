@@ -8,16 +8,16 @@ type ProductGridProps = {
 
 export function ProductGrid({ products, onSelectProduct }: ProductGridProps) {
   return (
-    <section className="mt-0">
-      <div className="mb-4">
-        <div>
-          <p className="text-sm font-medium text-muted">Popular picks</p>
-          <h2 className="text-lg font-medium text-ink">Ready for preorder</h2>
+    <section className="mt-5 sm:mt-8">
+      <div className="mb-4 sm:mb-5">
+        <div className="space-y-1">
+          <p className="text-xs font-semibold tracking-[-0.01em] text-muted sm:uppercase sm:tracking-[0.16em]">Popular picks</p>
+          <h2 className="text-[1.35rem] font-semibold leading-tight tracking-[-0.04em] text-ink sm:text-xl">Ready for preorder</h2>
         </div>
       </div>
 
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {products.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} onSelect={onSelectProduct} />
           ))}

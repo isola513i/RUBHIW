@@ -10,7 +10,7 @@ type CategoryTabsProps = {
 
 export function CategoryTabs({ categories, activeCategory, onCategoryChange }: CategoryTabsProps) {
   return (
-    <nav className="-mx-5 mt-6 mb-8 overflow-x-auto px-5 hide-scrollbar" aria-label="Product categories">
+    <nav className="-mx-5 mb-5 mt-5 overflow-x-auto px-5 hide-scrollbar sm:mb-8 sm:mt-6" aria-label="Product categories">
       <div className="flex min-w-max gap-3">
         {categories.map((category) => {
           const isActive = category === activeCategory;

@@ -1,15 +1,20 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ProductImage } from "@/components/ProductImage";
 import type { Product } from "@/data/products";
 import { formatPrice, getStatusClasses, productColors } from "@/lib/product-ui";
+
+const CART_STORAGE_KEY = "rubhiw-cart";
+
 type ProductBottomSheetProps = {
   product: Product | null;
   onClose: () => void;
 };
 
 export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps) {
+  const [addStatus, setAddStatus] = useState<"idle" | "adding" | "added">("idle");
+
   useEffect(() => {
     if (!product) {
       return;
@@ -25,9 +30,52 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
     return () => document.removeEventListener("keydown", handleEscape);
   }, [product, onClose]);
 
+  useEffect(() => {
+    setAddStatus("idle");
+  }, [product?.id]);
+
   const isOpen = product !== null;
   const displayPrice = product ? product.price_sale ?? product.price_full : 0;
   const packageColor = productColors[(product?.id.length ?? 0) % productColors.length];
+
+  const addToCart = async () => {
+    if (!product) {
+      return;
+    }
+
+    setAddStatus("adding");
+
+    let cartItems: { productId: string; quantity?: number }[] = [];
+
+    try {
+      const rawCart = window.localStorage.getItem(CART_STORAGE_KEY);
+      cartItems = rawCart ? JSON.parse(rawCart) : [];
+    } catch {
+      cartItems = [];
+    }
+
+    const existingItem = cartItems.find((item: { productId?: string }) => item.productId === product.id);
+    const nextItems = existingItem
+      ? cartItems.map((item: { productId: string; quantity?: number }) =>
+          item.productId === product.id ? { ...item, quantity: Math.min((item.quantity ?? 1) + 1, 99) } : item,
+        )
+      : [...cartItems, { productId: product.id, quantity: 1 }];
+
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(nextItems));
+    window.dispatchEvent(new Event("rubhiw-cart-updated"));
+
+    try {
+      await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: nextItems }),
+      });
+    } catch {
+      // Local cart still updates; the bag page will retry hydration.
+    }
+
+    setAddStatus("added");
+  };
 
   return (
     <>
@@ -88,9 +136,11 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
                   </div>
                   <button
                     type="button"
-                    className="min-w-[9.5rem] rounded-2xl bg-[#8FB2BF] px-5 py-3.5 text-sm font-semibold text-ink shadow-soft"
+                    className="min-w-[9.5rem] rounded-2xl bg-[#8FB2BF] px-5 py-3.5 text-sm font-semibold text-ink shadow-soft disabled:opacity-70"
+                    disabled={addStatus === "adding"}
+                    onClick={addToCart}
                   >
-                    Add to Cart
+                    {addStatus === "adding" ? "Adding..." : addStatus === "added" ? "Added" : "Add to Cart"}
                   </button>
                 </div>
               </div>
