@@ -7,6 +7,10 @@ import { checkRateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 const MAX_SLIP_SIZE_BYTES = 5 * 1024 * 1024;
+const MAX_NAME_LENGTH = 80;
+const MAX_CONTACT_LENGTH = 80;
+const MAX_ADDRESS_LENGTH = 700;
+const MAX_ITEMS_JSON_LENGTH = 5000;
 const allowedSlipTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const allowedSlipExtensions = new Set(["jpg", "jpeg", "png", "webp"]);
 
@@ -49,11 +53,23 @@ export async function POST(request: Request) {
     const customerName = String(formData.get("name") ?? "").trim();
     const contact = String(formData.get("contact") ?? "").trim();
     const address = String(formData.get("address") ?? "").trim();
-    const items = normalizeCartItems(JSON.parse(String(formData.get("items") ?? "[]")));
+    const rawItems = String(formData.get("items") ?? "[]");
+    const items = normalizeCartItems(JSON.parse(rawItems));
     const slip = formData.get("slip");
     const promptPayId = process.env.NEXT_PUBLIC_PROMPTPAY_ID?.trim() ?? "";
 
-    if (!customerName || !contact || !address || items.length === 0 || !(slip instanceof File) || !promptPayId) {
+    if (
+      !customerName ||
+      !contact ||
+      !address ||
+      customerName.length > MAX_NAME_LENGTH ||
+      contact.length > MAX_CONTACT_LENGTH ||
+      address.length > MAX_ADDRESS_LENGTH ||
+      rawItems.length > MAX_ITEMS_JSON_LENGTH ||
+      items.length === 0 ||
+      !(slip instanceof File) ||
+      !promptPayId
+    ) {
       return NextResponse.json({ error: "Invalid order payload" }, { status: 400 });
     }
 

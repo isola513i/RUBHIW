@@ -75,7 +75,8 @@ const getPhoneAndLine = (contact: string) => {
 };
 
 const formatSheetDate = (date: Date) => date.toISOString();
-const formatSheetText = (value: string) => (value ? `'${value.replace(/[\r\n\t]+/g, " ").trim()}` : "");
+const sanitizeSheetText = (value: string) => value.replace(/[\r\n\t]+/g, " ").trim();
+const formatSheetText = (value: string) => sanitizeSheetText(value);
 const createOrderId = () => `RBW-${randomBytes(4).toString("hex").toUpperCase()}`;
 
 async function uploadSlip(auth: ReturnType<typeof getGoogleAuth>, orderId: string, slip: File) {
@@ -114,7 +115,7 @@ async function appendRows(auth: ReturnType<typeof getGoogleAuth>, range: string,
       values,
     },
     spreadsheetId,
-    valueInputOption: "USER_ENTERED",
+    valueInputOption: "RAW",
   });
 }
 
@@ -221,7 +222,7 @@ export async function createGoogleSheetOrder(input: CreateOrderInput) {
       formatSheetText(input.promptPayId),
       formatSheetText(uploadedSlip.fileName),
       formatSheetText(uploadedSlip.fileId),
-      uploadedSlip.webViewLink ? `=HYPERLINK("${uploadedSlip.webViewLink}","เปิดสลิป")` : "",
+      uploadedSlip.webViewLink,
       formatSheetDate(now),
       "",
       "",
@@ -235,13 +236,13 @@ export async function createGoogleSheetOrder(input: CreateOrderInput) {
     `${ORDER_ITEMS_SHEET_NAME}!A:H`,
     input.summary.lines.map((lineItem) => [
       orderId,
-      lineItem.product.id,
-      lineItem.product.brand,
-      lineItem.product.name,
+      formatSheetText(lineItem.product.id),
+      formatSheetText(lineItem.product.brand),
+      formatSheetText(lineItem.product.name),
       lineItem.quantity,
       lineItem.unitPrice,
       lineItem.subtotal,
-      lineItem.product.status,
+      formatSheetText(lineItem.product.status),
     ]),
   );
 

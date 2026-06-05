@@ -5,6 +5,9 @@ import { checkRateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const ORDER_ID_PATTERN = /^RBW-[A-F0-9]{8}$/i;
+const MAX_CONTACT_LENGTH = 80;
+
 export async function GET(request: Request) {
   try {
     const rateLimitResponse = checkRateLimit(request, "orders:status", { limit: 20, windowMs: 10 * 60 * 1000 });
@@ -17,7 +20,7 @@ export async function GET(request: Request) {
     const orderId = searchParams.get("orderId")?.trim() ?? "";
     const contact = searchParams.get("contact")?.trim() ?? "";
 
-    if (!orderId || !contact) {
+    if (!orderId || !contact || !ORDER_ID_PATTERN.test(orderId) || contact.length > MAX_CONTACT_LENGTH) {
       return NextResponse.json({ error: "Order id and contact are required" }, { status: 400 });
     }
 
