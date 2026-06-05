@@ -123,10 +123,25 @@ type Translation = {
     total: string;
     prepareCheckout: string;
     checkoutTitle: string;
+    checkoutProgress: string;
+    steps: {
+      contact: string;
+      address: string;
+      payment: string;
+    };
+    nextStep: string;
+    backStep: string;
     contactTitle: string;
     customerName: string;
     customerContact: string;
     shippingAddress: string;
+    addressLine: string;
+    addressHome: string;
+    addressWork: string;
+    provincePlaceholder: string;
+    districtPlaceholder: string;
+    subdistrictPlaceholder: string;
+    postalCodePlaceholder: string;
     paymentTitle: string;
     paymentInstruction: string;
     promptPayMissing: string;
@@ -303,10 +318,25 @@ const translations: Record<Language, Translation> = {
       total: "รวม",
       prepareCheckout: "ส่งคำสั่งซื้อ",
       checkoutTitle: "ชำระเงิน",
+      checkoutProgress: "ขั้นตอนชำระเงิน",
+      steps: {
+        contact: "ผู้รับ",
+        address: "ที่อยู่",
+        payment: "ชำระเงิน",
+      },
+      nextStep: "ต่อไป",
+      backStep: "ย้อนกลับ",
       contactTitle: "ข้อมูลจัดส่ง",
       customerName: "ชื่อผู้รับ",
       customerContact: "เบอร์โทรหรือ LINE",
       shippingAddress: "ที่อยู่จัดส่ง",
+      addressLine: "บ้านเลขที่, ซอย, หมู่, ถนน, จุดสังเกต",
+      addressHome: "บ้าน",
+      addressWork: "ที่ทำงาน",
+      provincePlaceholder: "จังหวัด",
+      districtPlaceholder: "เขต/อำเภอ",
+      subdistrictPlaceholder: "แขวง/ตำบล",
+      postalCodePlaceholder: "รหัสไปรษณีย์",
       paymentTitle: "PromptPay",
       paymentInstruction: "สแกน QR เพื่อชำระเงิน แล้วแนบสลิปให้ร้านตรวจสอบ",
       promptPayMissing: "ยังไม่ได้ตั้งค่า NEXT_PUBLIC_PROMPTPAY_ID จึงยังสร้าง QR รับเงินจริงไม่ได้",
@@ -495,10 +525,25 @@ const translations: Record<Language, Translation> = {
       total: "Total",
       prepareCheckout: "Submit order",
       checkoutTitle: "Payment",
+      checkoutProgress: "Checkout steps",
+      steps: {
+        contact: "Contact",
+        address: "Address",
+        payment: "Payment",
+      },
+      nextStep: "Next",
+      backStep: "Back",
       contactTitle: "Delivery details",
       customerName: "Recipient name",
       customerContact: "Phone or LINE",
       shippingAddress: "Shipping address",
+      addressLine: "House no., alley, village, road, landmark",
+      addressHome: "Home",
+      addressWork: "Work",
+      provincePlaceholder: "Province",
+      districtPlaceholder: "District",
+      subdistrictPlaceholder: "Subdistrict",
+      postalCodePlaceholder: "Postal code",
       paymentTitle: "PromptPay",
       paymentInstruction: "Scan the QR to pay, then upload your slip for shop review.",
       promptPayMissing: "NEXT_PUBLIC_PROMPTPAY_ID is not configured, so a real payment QR cannot be generated yet.",

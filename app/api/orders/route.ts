@@ -54,6 +54,7 @@ export async function POST(request: Request) {
     const contact = String(formData.get("contact") ?? "").trim();
     const address = String(formData.get("address") ?? "").trim();
     const rawItems = String(formData.get("items") ?? "[]");
+    const shippingFee = Number(formData.get("shippingFee") ?? 0);
     const items = normalizeCartItems(JSON.parse(rawItems));
     const slip = formData.get("slip");
     const promptPayId = process.env.NEXT_PUBLIC_PROMPTPAY_ID?.trim() ?? "";
@@ -66,6 +67,9 @@ export async function POST(request: Request) {
       contact.length > MAX_CONTACT_LENGTH ||
       address.length > MAX_ADDRESS_LENGTH ||
       rawItems.length > MAX_ITEMS_JSON_LENGTH ||
+      !Number.isFinite(shippingFee) ||
+      shippingFee < 0 ||
+      shippingFee > 500 ||
       items.length === 0 ||
       !(slip instanceof File) ||
       !promptPayId
@@ -89,6 +93,7 @@ export async function POST(request: Request) {
       contact,
       customerName,
       promptPayId,
+      shippingFee,
       slip,
       summary,
     });

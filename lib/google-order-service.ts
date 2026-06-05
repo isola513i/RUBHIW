@@ -16,6 +16,7 @@ type CreateOrderInput = {
   customerEmail?: string;
   customerName: string;
   promptPayId: string;
+  shippingFee: number;
   slip: File;
   summary: CartSummary;
   userId?: string;
@@ -199,7 +200,7 @@ export async function createGoogleSheetOrder(input: CreateOrderInput) {
   const now = new Date();
   const { line, phone } = getPhoneAndLine(input.contact);
   const uploadedSlip = await uploadSlip(auth, orderId, input.slip);
-  const shippingFee = 0;
+  const shippingFee = input.shippingFee;
   const total = input.summary.subtotal + shippingFee;
 
   await appendRows(auth, `${ORDERS_SHEET_NAME}!A:X`, [
