@@ -30,8 +30,12 @@ type AddressOption = {
   subdistrict: string;
 };
 
-const addressDatasource: AddressOption[] = getAllData().flatMap((zipCodeData) =>
-  zipCodeData.subDistrictList.flatMap((subdistrict) => {
+const addressDatasource: AddressOption[] = getAllData().flatMap((zipCodeData) => {
+  if (!Array.isArray(zipCodeData.subDistrictList) || !Array.isArray(zipCodeData.districtList) || !Array.isArray(zipCodeData.provinceList)) {
+    return [];
+  }
+
+  return zipCodeData.subDistrictList.flatMap((subdistrict) => {
     const district = zipCodeData.districtList.find((districtItem) => districtItem.districtId === subdistrict.districtId);
     const province = zipCodeData.provinceList.find((provinceItem) => provinceItem.provinceId === subdistrict.provinceId);
 
@@ -49,8 +53,8 @@ const addressDatasource: AddressOption[] = getAllData().flatMap((zipCodeData) =>
         subdistrict: subdistrict.subDistrictName,
       },
     ];
-  }),
-);
+  });
+});
 
 const uniqueSorted = (values: string[]) => Array.from(new Set(values.filter(Boolean))).sort((a, b) => a.localeCompare(b, "th"));
 
