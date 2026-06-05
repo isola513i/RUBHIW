@@ -2,7 +2,7 @@
 
 import type { Product } from "@/data/products";
 import { ProductImage } from "@/components/ProductImage";
-import { formatPrice, getBrandChipClasses, productColors } from "@/lib/product-ui";
+import { formatPrice, getBrandChipClasses, getProductAvailability, getStatusClasses, productColors } from "@/lib/product-ui";
 import { useI18n } from "@/lib/i18n";
 
 type ProductCardProps = {
@@ -16,6 +16,17 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
   const packageColor = productColors[index % productColors.length];
   const displayPrice = product.price_sale ?? product.price_full;
   const brandChipClasses = getBrandChipClasses(product.brand);
+  const availability = getProductAvailability(product.status);
+  const availabilityLabel =
+    availability.tone === "stock"
+      ? t.products.availability.ready
+      : availability.tone === "preorder"
+        ? t.products.availability.preorder
+        : availability.tone === "unavailable"
+          ? t.products.availability.unavailable
+          : availability.tone === "hidden"
+            ? t.products.availability.hidden
+            : t.products.availability.info;
 
   return (
     <button
@@ -25,6 +36,9 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
       onClick={() => onSelect(product)}
     >
       <div className="relative overflow-hidden border-b border-[#EEE8DE] bg-[radial-gradient(circle_at_50%_46%,#FDFBF7_0%,#FAF8F3_58%,#F4EFE7_100%)]">
+        <span className={`absolute left-3 top-3 z-10 rounded-full px-3 py-1 text-[11px] font-semibold shadow-[0_8px_18px_rgba(74,67,59,0.10)] ${getStatusClasses(product.status)}`}>
+          {availabilityLabel}
+        </span>
         <ProductImage
           src={product.image_url}
           alt={`${product.brand} ${product.name}`}
@@ -45,7 +59,7 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
           {product.name}
         </h3>
         <p className="mt-1 line-clamp-1 text-[12px] font-medium leading-5 text-muted sm:text-[13px]">
-          {product.description || t.products.fallbackDescription}
+          {availability.tone === "preorder" ? t.products.availability.preorderHint : product.description || t.products.fallbackDescription}
         </p>
         <div className="mt-auto flex items-end gap-3 pt-2 sm:gap-4 sm:pt-3">
           <p className="text-[25px] font-semibold leading-none tracking-normal text-[#08111F] sm:text-[30px]">

@@ -73,6 +73,18 @@ type Translation = {
       addToCart: string;
     };
     statusLabels: Record<string, string>;
+    availability: {
+      ready: string;
+      preorder: string;
+      unavailable: string;
+      hidden: string;
+      info: string;
+      readyHint: string;
+      preorderHint: string;
+      unavailableHint: string;
+      hiddenHint: string;
+      infoHint: string;
+    };
   };
   filters: {
     category: string;
@@ -240,6 +252,18 @@ const translations: Record<Language, Translation> = {
         "pre-order": "พรีออเดอร์",
         "out of stock": "สินค้าหมด",
         hidden: "ซ่อนสินค้า",
+      },
+      availability: {
+        ready: "พร้อมขาย",
+        preorder: "พรีออเดอร์",
+        unavailable: "สินค้าหมด",
+        hidden: "ซ่อนสินค้า",
+        info: "เช็กสถานะ",
+        readyHint: "พร้อมใส่ถุงและชำระเงินได้ทันที",
+        preorderHint: "สินค้ารอบพรีออเดอร์ ร้านจะอัปเดตรอบขนส่งหลังตรวจสลิป",
+        unavailableHint: "ยังไม่เปิดรับออเดอร์สินค้านี้",
+        hiddenHint: "สินค้านี้ยังไม่เปิดแสดงในหน้าร้าน",
+        infoHint: "ตรวจรายละเอียดสถานะก่อนสั่งซื้อ",
       },
     },
     filters: {
@@ -420,6 +444,18 @@ const translations: Record<Language, Translation> = {
         "pre-order": "Pre-order",
         "out of stock": "Out of stock",
         hidden: "Hidden",
+      },
+      availability: {
+        ready: "Ready",
+        preorder: "Pre-order",
+        unavailable: "Out of stock",
+        hidden: "Hidden",
+        info: "Check status",
+        readyHint: "Ready to add to bag and submit payment now.",
+        preorderHint: "Pre-order item. The shop will update cargo timing after slip review.",
+        unavailableHint: "This item is not accepting orders right now.",
+        hiddenHint: "This item is not visible for ordering yet.",
+        infoHint: "Check the status details before ordering.",
       },
     },
     filters: {

@@ -21,17 +21,44 @@ export const formatPrice = (value: number) =>
   }).format(value);
 
 export const getStatusClasses = (status: string) => {
-  switch (status.trim().toLowerCase()) {
-    case "in stock":
+  switch (getProductAvailability(status).tone) {
+    case "stock":
       return "bg-[var(--status-stock-bg)] text-[var(--status-stock-text)]";
-    case "pre-order":
     case "preorder":
       return "bg-[var(--status-preorder-bg)] text-[var(--status-preorder-text)]";
-    case "out of stock":
+    case "unavailable":
       return "bg-[var(--status-oos-bg)] text-[var(--status-oos-text)]";
     case "hidden":
       return "bg-[var(--status-hidden-bg)] text-[var(--status-hidden-text)]";
     default:
       return "bg-beige/55 text-ink";
   }
+};
+
+export type ProductAvailabilityTone = "stock" | "preorder" | "unavailable" | "hidden" | "info";
+
+export const getProductAvailability = (status: string): { isPurchasable: boolean; tone: ProductAvailabilityTone } => {
+  const normalizedStatus = status.trim().toLowerCase();
+
+  if (!normalizedStatus) {
+    return { isPurchasable: true, tone: "info" };
+  }
+
+  if (["hidden", "hide", "ซ่อน"].some((value) => normalizedStatus.includes(value))) {
+    return { isPurchasable: false, tone: "hidden" };
+  }
+
+  if (["out of stock", "sold out", "หมด", "ไม่พร้อมขาย"].some((value) => normalizedStatus.includes(value))) {
+    return { isPurchasable: false, tone: "unavailable" };
+  }
+
+  if (["preorder", "pre-order", "รอของ", "พรีออเดอร์"].some((value) => normalizedStatus.includes(value))) {
+    return { isPurchasable: true, tone: "preorder" };
+  }
+
+  if (["in stock", "พร้อมขาย", "พร้อมส่ง"].some((value) => normalizedStatus.includes(value))) {
+    return { isPurchasable: true, tone: "stock" };
+  }
+
+  return { isPurchasable: true, tone: "info" };
 };

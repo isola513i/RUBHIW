@@ -7,7 +7,7 @@ import { useCart } from "@/components/CartProvider";
 import { ProductImage } from "@/components/ProductImage";
 import type { Product } from "@/data/products";
 import { useI18n } from "@/lib/i18n";
-import { formatPrice, getStatusClasses, productColors } from "@/lib/product-ui";
+import { formatPrice, getProductAvailability, getStatusClasses, productColors } from "@/lib/product-ui";
 
 type ProductBottomSheetProps = {
   product: Product | null;
@@ -89,9 +89,30 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
   const packageColor = productColors[(product?.id.length ?? 0) % productColors.length];
   const productDescription = product?.description || t.products.fallbackDescription;
   const isDescriptionLong = productDescription.length > 120;
+  const availability = product ? getProductAvailability(product.status) : { isPurchasable: false, tone: "info" as const };
+  const availabilityLabel =
+    availability.tone === "stock"
+      ? t.products.availability.ready
+      : availability.tone === "preorder"
+        ? t.products.availability.preorder
+        : availability.tone === "unavailable"
+          ? t.products.availability.unavailable
+          : availability.tone === "hidden"
+            ? t.products.availability.hidden
+            : t.products.availability.info;
+  const availabilityHint =
+    availability.tone === "stock"
+      ? t.products.availability.readyHint
+      : availability.tone === "preorder"
+        ? t.products.availability.preorderHint
+        : availability.tone === "unavailable"
+          ? t.products.availability.unavailableHint
+          : availability.tone === "hidden"
+            ? t.products.availability.hiddenHint
+            : t.products.availability.infoHint;
 
   const addToCart = async () => {
-    if (!product) {
+    if (!product || !availability.isPurchasable) {
       return;
     }
 
@@ -261,8 +282,12 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
                       <span
                         className={`inline-flex rounded-full border px-4 py-1.5 text-sm font-medium ${getStatusClasses(product.status)}`}
                       >
-                        {statusLabel(product.status)}
+                        {availabilityLabel}
                       </span>
+                      <p className="ml-auto mt-2 max-w-[12rem] text-right text-[13px] font-medium leading-5 text-muted">{availabilityHint}</p>
+                      {statusLabel(product.status) !== availabilityLabel ? (
+                        <p className="mt-1 text-right text-[12px] font-medium leading-5 text-muted">{statusLabel(product.status)}</p>
+                      ) : null}
                     </dd>
                   </div>
                 </div>
@@ -272,7 +297,7 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
                 <button
                   type="button"
                   className="w-full rounded-[18px] bg-[#151412] px-6 py-3.5 text-lg font-semibold text-[#FDFBF7] shadow-[0_16px_34px_rgba(20,18,15,0.18)] transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.99] disabled:opacity-70"
-                  disabled={addStatus !== "idle"}
+                  disabled={addStatus !== "idle" || !availability.isPurchasable}
                   onClick={addToCart}
                 >
                   {addStatus === "adding" ? (
@@ -282,6 +307,8 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
                     </span>
                   ) : addStatus === "added" ? (
                     t.products.addStates.added
+                  ) : !availability.isPurchasable ? (
+                    availabilityLabel
                   ) : (
                     t.products.addStates.addToCart
                   )}
