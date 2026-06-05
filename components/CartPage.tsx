@@ -543,13 +543,13 @@ export function CartPage() {
                 <section className="mt-6">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-base font-semibold text-ink">{t.cart.shippingAddress}</h3>
-                    <div className="inline-flex rounded-2xl border border-beige/60 bg-[#FDFBF7] p-1">
+                    <div className="inline-flex rounded-full border border-beige/55 bg-cream p-0.5">
                       {(["home", "work"] as const).map((label) => (
                         <button
                           key={label}
                           type="button"
-                          className={`min-h-9 rounded-xl px-3 text-[13px] font-semibold transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.96] ${
-                            checkoutForm.addressLabel === label ? "bg-blue text-ink" : "text-muted"
+                          className={`min-h-8 rounded-full px-3 text-[13px] font-semibold transition duration-200 ease-[var(--ease-out-ui)] active:scale-[0.96] ${
+                            checkoutForm.addressLabel === label ? "bg-blue/80 text-ink shadow-[0_1px_6px_rgba(74,67,59,0.08)]" : "text-muted"
                           }`}
                           onClick={() => updateCheckoutField("addressLabel", label)}
                         >
