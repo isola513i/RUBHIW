@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Minus, Plus, Trash2, Upload, X } from "lucide-react";
+import { CheckCircle2, Clipboard, Minus, Plus, Search, Trash2, Upload, X } from "lucide-react";
 import { showAppToast } from "@/components/AppToast";
 import { useCart } from "@/components/CartProvider";
 import { Header } from "@/components/Header";
@@ -29,7 +29,7 @@ type CheckoutForm = {
 };
 
 type SubmittedOrder = {
-  id: string;
+  orderId: string;
   status: "pending-slip-review";
 };
 
@@ -177,6 +177,8 @@ export function CartPage() {
       const order = payload as SubmittedOrder;
 
       setSubmittedOrder(order);
+      const storedOrders = JSON.parse(window.localStorage.getItem(ORDERS_STORAGE_KEY) ?? "[]") as SubmittedOrder[];
+      window.localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify([order, ...storedOrders.filter((storedOrder) => storedOrder.orderId !== order.orderId)].slice(0, 5)));
       clearCart();
       showAppToast({ message: t.cart.orderSubmitted });
     } catch (submitError) {
@@ -188,6 +190,15 @@ export function CartPage() {
     } finally {
       setIsSubmittingOrder(false);
     }
+  };
+
+  const copySubmittedOrderId = async () => {
+    if (!submittedOrder) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(submittedOrder.orderId);
+    showAppToast({ message: t.cart.orderNumberCopied });
   };
 
   return (
@@ -322,12 +333,38 @@ export function CartPage() {
                 <CheckCircle2 className="h-8 w-8" strokeWidth={2.4} />
               </div>
               <p className="mt-5 text-2xl font-semibold text-ink">{t.cart.reviewStatus}</p>
-              <p className="mt-3 text-[15px] font-medium leading-7 text-muted">
-                {t.cart.orderNumber}: {submittedOrder.id}
+              <p className="mt-3 max-w-[19rem] text-[15px] font-medium leading-7 text-muted">
+                {t.cart.confirmationCopy}
               </p>
-              <Link className="mt-8 inline-flex min-h-11 rounded-2xl bg-ink px-6 py-3 text-sm font-semibold text-cream" href="/">
-                {t.backToHome}
-              </Link>
+              <div className="mt-5 flex w-full max-w-[20rem] items-center justify-between gap-3 rounded-2xl border border-beige/65 bg-[#FDFBF7] px-4 py-3 text-left">
+                <div className="min-w-0">
+                  <p className="text-[12px] font-semibold text-muted">{t.cart.orderNumber}</p>
+                  <p className="mt-1 truncate text-lg font-semibold tracking-normal text-ink">{submittedOrder.orderId}</p>
+                </div>
+                <button
+                  type="button"
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-stone-100 text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.94]"
+                  aria-label={t.cart.copyOrderNumber}
+                  onClick={copySubmittedOrderId}
+                >
+                  <Clipboard className="h-4.5 w-4.5" strokeWidth={2.2} />
+                </button>
+              </div>
+              <div className="mt-7 grid w-full max-w-[20rem] grid-cols-1 gap-3">
+                <Link
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-ink px-6 py-3 text-sm font-semibold text-cream transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98]"
+                  href={`/track?orderId=${encodeURIComponent(submittedOrder.orderId)}`}
+                >
+                  <Search className="h-4 w-4" strokeWidth={2.3} />
+                  {t.cart.trackOrder}
+                </Link>
+                <Link
+                  className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-beige/70 bg-cream px-6 py-3 text-sm font-semibold text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98]"
+                  href="/"
+                >
+                  {t.backToHome}
+                </Link>
+              </div>
             </div>
           ) : (
             <form className="min-h-0 flex-1 overflow-y-auto px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-5" onSubmit={submitOrder}>

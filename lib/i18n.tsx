@@ -130,6 +130,10 @@ type Translation = {
     orderSubmitted: string;
     reviewStatus: string;
     orderNumber: string;
+    confirmationCopy: string;
+    copyOrderNumber: string;
+    orderNumberCopied: string;
+    trackOrder: string;
   };
   placeholders: Record<
     string,
@@ -287,6 +291,10 @@ const translations: Record<Language, Translation> = {
       orderSubmitted: "ส่งคำสั่งซื้อแล้ว",
       reviewStatus: "รอตรวจสลิป",
       orderNumber: "เลขคำสั่งซื้อ",
+      confirmationCopy: "ร้านได้รับคำสั่งซื้อแล้ว เก็บเลขนี้ไว้เพื่อติดตามสถานะตรวจสลิปและเลขพัสดุ",
+      copyOrderNumber: "คัดลอกเลขคำสั่งซื้อ",
+      orderNumberCopied: "คัดลอกเลขคำสั่งซื้อแล้ว",
+      trackOrder: "ติดตามคำสั่งซื้อ",
     },
     placeholders: {
       products: {
@@ -456,6 +464,10 @@ const translations: Record<Language, Translation> = {
       orderSubmitted: "Order submitted",
       reviewStatus: "Slip pending review",
       orderNumber: "Order number",
+      confirmationCopy: "The shop received your order. Keep this number to track slip review and shipment updates.",
+      copyOrderNumber: "Copy order number",
+      orderNumberCopied: "Order number copied",
+      trackOrder: "Track order",
     },
     placeholders: {
       products: {
