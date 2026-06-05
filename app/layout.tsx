@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
-import { Prompt } from "next/font/google";
 import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rubhiw.vercel.app";
 
-const prompt = Prompt({
-  subsets: ["latin", "thai"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-prompt",
-});
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "RUBHIW",
-  description: "RUBHIW mobile-first catalog for Korean imported goods and pre-orders.",
+  description: "RUBHIW แคตตาล็อกสินค้านำเข้าเกาหลีและพรีออเดอร์",
   applicationName: "RUBHIW",
   icons: {
     icon: [
@@ -34,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${prompt.variable} font-sans antialiased`}>
+    <html lang="th">
+      <body className="font-sans antialiased">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

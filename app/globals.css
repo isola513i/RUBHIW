@@ -7,7 +7,7 @@
   --beige: #ddc3a5;
   --blue: #aec6cf;
   --ink: #4a433b;
-  --muted: #8c847a;
+  --muted: #6f675e;
   --status-stock-bg: #d9f0d8;
   --status-stock-text: #1e7a35;
   --status-preorder-bg: #d9eaf8;
@@ -16,6 +16,7 @@
   --status-oos-text: #fdfbf7;
   --status-hidden-bg: #e7e5e4;
   --status-hidden-text: #78716c;
+  --ease-out-ui: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
@@ -35,6 +36,22 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--ink) 72%, var(--blue));
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .hide-scrollbar {
   scrollbar-width: none;
 }
@@ -44,7 +61,7 @@ a {
 }
 
 .cart-badge-pop {
-  animation: cart-badge-pop 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: cart-badge-pop 300ms var(--ease-out-ui);
 }
 
 @keyframes cart-badge-pop {
@@ -52,8 +69,8 @@ a {
     transform: scale(0.78);
   }
 
-  45% {
-    transform: scale(1.28);
+  55% {
+    transform: scale(1.16);
   }
 
   100% {

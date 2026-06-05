@@ -14,13 +14,13 @@ const config: Config = {
         beige: "#DDC3A5",
         blue: "#AEC6CF",
         ink: "#4A433B",
-        muted: "#8C847A",
+        muted: "#6F675E",
       },
       boxShadow: {
         soft: "0 4px 20px rgba(74, 67, 59, 0.05)",
       },
       fontFamily: {
-        sans: ["var(--font-prompt)", "Prompt", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Prompt", "Noto Sans Thai", "Tahoma", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },
