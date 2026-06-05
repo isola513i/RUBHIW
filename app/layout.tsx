@@ -3,12 +3,20 @@ import { AppProviders } from "@/components/AppProviders";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rubhiw.vercel.app";
+const siteName = "RUBHIW";
+const siteDescription = "RUBHIW แคตตาล็อกสินค้านำเข้าเกาหลี พรีออเดอร์สกินแคร์ เมคอัพ และขนม พร้อมติดตามสถานะคำสั่งซื้อ";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "RUBHIW",
-  description: "RUBHIW แคตตาล็อกสินค้านำเข้าเกาหลีและพรีออเดอร์",
-  applicationName: "RUBHIW",
+  title: {
+    default: siteName,
+    template: `%s | ${siteName}`,
+  },
+  description: siteDescription,
+  applicationName: siteName,
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [
       { url: "/favicon_io/favicon.ico" },
@@ -18,6 +26,32 @@ export const metadata: Metadata = {
     apple: [{ url: "/favicon_io/apple-touch-icon.png", sizes: "180x180" }],
   },
   manifest: "/favicon_io/site.webmanifest",
+  openGraph: {
+    description: siteDescription,
+    images: [
+      {
+        alt: "RUBHIW Korean preorder catalog",
+        height: 630,
+        url: "/image/hero01.png",
+        width: 1200,
+      },
+    ],
+    locale: "th_TH",
+    siteName,
+    title: siteName,
+    type: "website",
+    url: "/",
+  },
+  robots: {
+    follow: true,
+    index: true,
+  },
+  twitter: {
+    card: "summary_large_image",
+    description: siteDescription,
+    images: ["/image/hero01.png"],
+    title: siteName,
+  },
 };
 
 export default function RootLayout({
