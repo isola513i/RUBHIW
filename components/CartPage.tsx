@@ -28,6 +28,8 @@ type CheckoutForm = {
   slipName: string;
 };
 
+type CheckoutErrors = Partial<Record<keyof CheckoutForm, string>>;
+
 type SubmittedOrder = {
   orderId: string;
   status: "pending-slip-review";
@@ -64,6 +66,7 @@ export function CartPage() {
     address: "",
     slipName: "",
   });
+  const [checkoutErrors, setCheckoutErrors] = useState<CheckoutErrors>({});
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrder | null>(null);
 
   useEffect(() => {
@@ -111,27 +114,56 @@ export function CartPage() {
   const cargoFee = 0;
   const total = cart.subtotal + cargoFee;
   const promptPayQrUrl = promptPayId ? `https://promptpay.io/${encodeURIComponent(promptPayId)}/${total.toFixed(2)}.png` : "";
-  const canSubmitOrder =
-    Boolean(promptPayId) &&
-    checkoutForm.name.trim().length > 0 &&
-    checkoutForm.contact.trim().length > 0 &&
-    checkoutForm.address.trim().length > 0 &&
-    slipFile !== null;
+  const validateCheckoutForm = () => {
+    const nextErrors: CheckoutErrors = {};
+    const contact = checkoutForm.contact.trim();
+    const phoneLikeContact = contact.replace(/[\s-]/g, "");
+
+    if (checkoutForm.name.trim().length < 2) {
+      nextErrors.name = t.cart.validation.name;
+    }
+
+    if (contact.length < 4) {
+      nextErrors.contact = t.cart.validation.contactRequired;
+    } else if (/^\d/.test(phoneLikeContact) && !/^[+0-9]{9,15}$/.test(phoneLikeContact)) {
+      nextErrors.contact = t.cart.validation.contactFormat;
+    }
+
+    if (checkoutForm.address.trim().length < 12) {
+      nextErrors.address = t.cart.validation.address;
+    }
+
+    if (!slipFile) {
+      nextErrors.slipName = t.cart.validation.slip;
+    }
+
+    if (!promptPayId) {
+      nextErrors.slipName = t.cart.promptPayMissing;
+    }
+
+    setCheckoutErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const canSubmitOrder = Boolean(promptPayId) && !isSubmittingOrder;
 
   const updateCheckoutField = (field: keyof CheckoutForm, value: string) => {
     setCheckoutForm((currentForm) => ({ ...currentForm, [field]: value }));
+    setCheckoutErrors((currentErrors) => ({ ...currentErrors, [field]: undefined }));
   };
 
   const updateSlipFile = (file: File | null) => {
     if (!file) {
       setSlipFile(null);
       updateCheckoutField("slipName", "");
+      setCheckoutErrors((currentErrors) => ({ ...currentErrors, slipName: t.cart.validation.slip }));
       return;
     }
 
     if (!file.type.startsWith("image/")) {
       setSlipFile(null);
       updateCheckoutField("slipName", "");
+      setCheckoutErrors((currentErrors) => ({ ...currentErrors, slipName: t.cart.slipInvalidType }));
       showAppToast({ message: t.cart.slipInvalidType, variant: "error" });
       return;
     }
@@ -139,18 +171,20 @@ export function CartPage() {
     if (file.size > MAX_SLIP_SIZE_BYTES) {
       setSlipFile(null);
       updateCheckoutField("slipName", "");
+      setCheckoutErrors((currentErrors) => ({ ...currentErrors, slipName: t.cart.slipTooLarge }));
       showAppToast({ message: t.cart.slipTooLarge, variant: "error" });
       return;
     }
 
     setSlipFile(file);
     updateCheckoutField("slipName", file.name);
+    setCheckoutErrors((currentErrors) => ({ ...currentErrors, slipName: undefined }));
   };
 
   const submitOrder = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!canSubmitOrder || !slipFile || isSubmittingOrder) {
+    if (!validateCheckoutForm() || !slipFile || isSubmittingOrder) {
       return;
     }
 
@@ -367,34 +401,50 @@ export function CartPage() {
               </div>
             </div>
           ) : (
-            <form className="min-h-0 flex-1 overflow-y-auto px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-5" onSubmit={submitOrder}>
+            <form className="min-h-0 flex-1 overflow-y-auto px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-5" noValidate onSubmit={submitOrder}>
               <section>
                 <h3 className="text-base font-semibold text-ink">{t.cart.contactTitle}</h3>
                 <div className="mt-4 space-y-3">
-                  <input
-                    className="min-h-12 w-full rounded-2xl border border-beige/60 bg-cream px-4 text-[15px] font-medium text-ink outline-none placeholder:text-muted"
-                    minLength={2}
-                    placeholder={t.cart.customerName}
-                    value={checkoutForm.name}
-                    onChange={(event) => updateCheckoutField("name", event.target.value)}
-                    required
-                  />
-                  <input
-                    className="min-h-12 w-full rounded-2xl border border-beige/60 bg-cream px-4 text-[15px] font-medium text-ink outline-none placeholder:text-muted"
-                    minLength={4}
-                    placeholder={t.cart.customerContact}
-                    value={checkoutForm.contact}
-                    onChange={(event) => updateCheckoutField("contact", event.target.value)}
-                    required
-                  />
-                  <textarea
-                    className="min-h-24 w-full resize-none rounded-2xl border border-beige/60 bg-cream px-4 py-3 text-[15px] font-medium leading-6 text-ink outline-none placeholder:text-muted"
-                    minLength={10}
-                    placeholder={t.cart.shippingAddress}
-                    value={checkoutForm.address}
-                    onChange={(event) => updateCheckoutField("address", event.target.value)}
-                    required
-                  />
+                  <div>
+                    <input
+                      aria-invalid={Boolean(checkoutErrors.name)}
+                      aria-describedby={checkoutErrors.name ? "checkout-name-error" : undefined}
+                      className={`min-h-12 w-full rounded-2xl border bg-cream px-4 text-[15px] font-medium text-ink outline-none placeholder:text-muted ${
+                        checkoutErrors.name ? "border-red-300 bg-red-50/45" : "border-beige/60"
+                      }`}
+                      placeholder={t.cart.customerName}
+                      value={checkoutForm.name}
+                      onChange={(event) => updateCheckoutField("name", event.target.value)}
+                    />
+                    {checkoutErrors.name ? <p id="checkout-name-error" className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.name}</p> : null}
+                  </div>
+                  <div>
+                    <input
+                      aria-invalid={Boolean(checkoutErrors.contact)}
+                      aria-describedby={checkoutErrors.contact ? "checkout-contact-error" : undefined}
+                      className={`min-h-12 w-full rounded-2xl border bg-cream px-4 text-[15px] font-medium text-ink outline-none placeholder:text-muted ${
+                        checkoutErrors.contact ? "border-red-300 bg-red-50/45" : "border-beige/60"
+                      }`}
+                      inputMode="tel"
+                      placeholder={t.cart.customerContact}
+                      value={checkoutForm.contact}
+                      onChange={(event) => updateCheckoutField("contact", event.target.value)}
+                    />
+                    {checkoutErrors.contact ? <p id="checkout-contact-error" className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.contact}</p> : null}
+                  </div>
+                  <div>
+                    <textarea
+                      aria-invalid={Boolean(checkoutErrors.address)}
+                      aria-describedby={checkoutErrors.address ? "checkout-address-error" : undefined}
+                      className={`min-h-24 w-full resize-none rounded-2xl border bg-cream px-4 py-3 text-[15px] font-medium leading-6 text-ink outline-none placeholder:text-muted ${
+                        checkoutErrors.address ? "border-red-300 bg-red-50/45" : "border-beige/60"
+                      }`}
+                      placeholder={t.cart.shippingAddress}
+                      value={checkoutForm.address}
+                      onChange={(event) => updateCheckoutField("address", event.target.value)}
+                    />
+                    {checkoutErrors.address ? <p id="checkout-address-error" className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.address}</p> : null}
+                  </div>
                 </div>
               </section>
 
@@ -425,13 +475,14 @@ export function CartPage() {
                     onChange={(event) => updateSlipFile(event.target.files?.[0] ?? null)}
                   />
                 </label>
+                {checkoutErrors.slipName ? <p className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.slipName}</p> : null}
                 <p className="mt-2 text-[13px] font-medium leading-5 text-muted">{t.cart.slipRequirement}</p>
               </section>
 
               <button
                 type="submit"
                 className="mt-6 min-h-12 w-full rounded-2xl bg-ink px-5 py-3.5 text-sm font-semibold text-cream transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98] disabled:opacity-45"
-                disabled={!canSubmitOrder || isSubmittingOrder}
+                disabled={!canSubmitOrder}
               >
                 {isSubmittingOrder ? t.products.addStates.adding : t.cart.submitOrder}
               </button>

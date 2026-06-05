@@ -134,6 +134,13 @@ type Translation = {
     copyOrderNumber: string;
     orderNumberCopied: string;
     trackOrder: string;
+    validation: {
+      name: string;
+      contactRequired: string;
+      contactFormat: string;
+      address: string;
+      slip: string;
+    };
   };
   placeholders: Record<
     string,
@@ -295,6 +302,13 @@ const translations: Record<Language, Translation> = {
       copyOrderNumber: "คัดลอกเลขคำสั่งซื้อ",
       orderNumberCopied: "คัดลอกเลขคำสั่งซื้อแล้ว",
       trackOrder: "ติดตามคำสั่งซื้อ",
+      validation: {
+        name: "กรุณากรอกชื่อผู้รับอย่างน้อย 2 ตัวอักษร",
+        contactRequired: "กรุณากรอกเบอร์โทรหรือ LINE ที่ติดต่อได้",
+        contactFormat: "เบอร์โทรควรมี 9-15 หลัก และใช้ตัวเลขเท่านั้น",
+        address: "กรุณากรอกที่อยู่จัดส่งให้ครบถ้วน",
+        slip: "กรุณาแนบสลิปโอนเงิน",
+      },
     },
     placeholders: {
       products: {
@@ -468,6 +482,13 @@ const translations: Record<Language, Translation> = {
       copyOrderNumber: "Copy order number",
       orderNumberCopied: "Order number copied",
       trackOrder: "Track order",
+      validation: {
+        name: "Enter the recipient name with at least 2 characters.",
+        contactRequired: "Enter a phone number or LINE contact.",
+        contactFormat: "Phone numbers should use 9-15 digits only.",
+        address: "Enter the full shipping address.",
+        slip: "Upload the payment slip.",
+      },
     },
     placeholders: {
       products: {
