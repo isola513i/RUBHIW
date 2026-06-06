@@ -31,7 +31,7 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
   return (
     <button
       type="button"
-      className="group w-full cursor-pointer overflow-hidden rounded-[24px] border border-cream/80 bg-cream text-left shadow-[0_16px_38px_rgba(74,67,59,0.09)] transition duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98] sm:rounded-[30px] sm:shadow-[0_22px_55px_rgba(74,67,59,0.10)] sm:hover:-translate-y-1 sm:hover:shadow-[0_30px_70px_rgba(74,67,59,0.13)]"
+      className="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-[24px] border border-cream/80 bg-cream text-left shadow-[0_16px_38px_rgba(74,67,59,0.09)] transition duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98] sm:rounded-[30px] sm:shadow-[0_22px_55px_rgba(74,67,59,0.10)] sm:hover:-translate-y-1 sm:hover:shadow-[0_30px_70px_rgba(74,67,59,0.13)]"
       data-sku={product.id}
       onClick={() => onSelect(product)}
     >
@@ -47,21 +47,21 @@ export function ProductCard({ product, index, onSelect }: ProductCardProps) {
           packageColor={packageColor}
         />
       </div>
-      <div className="flex min-h-[10.4rem] flex-col px-4 pb-4 pt-4 sm:min-h-[11.25rem] sm:px-5 sm:pb-5 sm:pt-5">
-        <div className="flex w-full items-center">
+      <div className="flex flex-1 flex-col px-4 pb-4 pt-4 sm:px-5 sm:pb-5 sm:pt-5">
+        <div className="flex min-h-7 w-full items-center">
           <span
             className={`inline-flex min-w-0 max-w-[56%] truncate rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] sm:text-[10px] ${brandChipClasses}`}
           >
             {product.brand}
           </span>
         </div>
-        <h3 className="mt-3 min-h-[2.15rem] text-base font-semibold leading-tight tracking-normal text-[#08111F] sm:text-[17px]">
+        <h3 className="mt-3 line-clamp-4 min-h-[5rem] text-base font-semibold leading-tight tracking-normal text-[#08111F] sm:min-h-[5.35rem] sm:text-[17px]">
           {product.name}
         </h3>
-        <p className="mt-1 line-clamp-1 text-[12px] font-medium leading-5 text-muted sm:text-[13px]">
+        <p className="mt-1 line-clamp-1 min-h-5 text-[12px] font-medium leading-5 text-muted sm:text-[13px]">
           {availability.tone === "preorder" ? t.products.availability.preorderHint : product.description || t.products.fallbackDescription}
         </p>
-        <div className="mt-auto flex items-end gap-3 pt-2 sm:gap-4 sm:pt-3">
+        <div className="mt-auto flex min-h-8 items-end gap-3 pt-2 sm:gap-4 sm:pt-3">
           <p className="text-[25px] font-semibold leading-none tracking-normal text-[#08111F] sm:text-[30px]">
             {formatPrice(displayPrice)}
           </p>
