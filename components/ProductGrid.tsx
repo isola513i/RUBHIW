@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { useI18n } from "@/lib/i18n";
@@ -15,10 +16,31 @@ type ProductGridProps = {
 
 export function ProductGrid({ hasActiveFilters, products, searchQuery, totalCount, onReset, onSelectProduct }: ProductGridProps) {
   const { t } = useI18n();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const previousSignatureRef = useRef("");
   const heading = searchQuery.trim() ? searchQuery.trim() : t.products.popularPicks;
   const resultSummary = hasActiveFilters
     ? `${t.products.resultsCount(products.length)} / ${t.products.resultsCount(totalCount)}`
     : t.products.resultsCount(products.length);
+  const resultSignature = `${searchQuery.trim()}|${totalCount}|${products.map((product) => product.id).join(",")}`;
+
+  useEffect(() => {
+    if (!previousSignatureRef.current) {
+      previousSignatureRef.current = resultSignature;
+      return;
+    }
+
+    if (previousSignatureRef.current === resultSignature) {
+      return;
+    }
+
+    previousSignatureRef.current = resultSignature;
+    setIsRefreshing(true);
+
+    const refreshTimer = window.setTimeout(() => setIsRefreshing(false), 240);
+
+    return () => window.clearTimeout(refreshTimer);
+  }, [resultSignature]);
 
   return (
     <section className="mt-5 sm:mt-8">
@@ -30,7 +52,12 @@ export function ProductGrid({ hasActiveFilters, products, searchQuery, totalCoun
       </div>
 
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div
+          className={`relative grid grid-cols-2 gap-3 overflow-hidden sm:gap-4 min-[820px]:grid-cols-3 lg:grid-cols-4 ${
+            isRefreshing ? "product-grid-refresh product-grid-updating" : ""
+          }`}
+          aria-busy={isRefreshing}
+        >
           {products.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} onSelect={onSelectProduct} />
           ))}

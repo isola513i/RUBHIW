@@ -85,11 +85,19 @@ export function CartPage() {
   const [addressValue, setAddressValue] = useState<ThaiAddressValue>(() => createEmptyThaiAddressValue());
   const [checkoutErrors, setCheckoutErrors] = useState<CheckoutErrors>({});
   const [submittedOrder, setSubmittedOrder] = useState<SubmittedOrder | null>(null);
+  const [exitingProductIds, setExitingProductIds] = useState<Set<string>>(() => new Set());
 
   useEffect(() => {
     let isCurrent = true;
 
     async function syncCart() {
+      if (items.length === 0) {
+        setError("");
+        setCart(emptyCart);
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       setError("");
 
@@ -238,6 +246,24 @@ export function CartPage() {
     setCheckoutErrors((currentErrors) => ({ ...currentErrors, addressLine: undefined }));
   };
 
+  const updateCartLineQuantity = (productId: string, quantity: number) => {
+    if (quantity > 0) {
+      updateQuantity(productId, quantity);
+      return;
+    }
+
+    setExitingProductIds((currentIds) => new Set(currentIds).add(productId));
+
+    window.setTimeout(() => {
+      updateQuantity(productId, 0);
+      setExitingProductIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+        nextIds.delete(productId);
+        return nextIds;
+      });
+    }, 180);
+  };
+
   const updateSlipFile = (file: File | null) => {
     if (!file) {
       setSlipFile(null);
@@ -323,7 +349,7 @@ export function CartPage() {
   };
 
   return (
-    <main className="mx-auto min-h-screen max-w-md px-5 pb-28">
+    <main className="mx-auto min-h-screen max-w-md px-5 pb-28 md:max-w-3xl md:px-8 lg:max-w-4xl">
       <Header />
 
       <section className="pt-7">
@@ -337,21 +363,24 @@ export function CartPage() {
         </div>
       </section>
 
-      {error ? <p className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</p> : null}
+      {error ? <p className="motion-error-enter mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{error}</p> : null}
 
-      <section className="mt-7 space-y-3" aria-live="polite">
+      <section className="mt-7 grid gap-3 md:grid-cols-2" aria-live="polite">
         {isLoading ? (
-          <div className="rounded-[28px] border border-beige/55 bg-cream px-5 py-9 text-center text-[15px] font-medium leading-6 text-muted shadow-soft">
+          <div className="rounded-[28px] border border-beige/55 bg-cream px-5 py-9 text-center text-[15px] font-medium leading-6 text-muted shadow-soft md:col-span-2">
             {t.cart.loading}
           </div>
         ) : cart.lines.length > 0 ? (
           cart.lines.map((line, index) => {
             const packageColor = productColors[index % productColors.length];
+            const isExiting = exitingProductIds.has(line.product.id);
 
             return (
               <article
                 key={line.product.id}
-                className="grid grid-cols-[6.25rem_1fr] gap-4 rounded-[28px] border border-beige/55 bg-cream p-3 shadow-[0_14px_34px_rgba(74,67,59,0.08)]"
+                className={`cart-line-enter grid grid-cols-[6.25rem_1fr] gap-4 rounded-[28px] border border-beige/55 bg-cream p-3 shadow-[0_14px_34px_rgba(74,67,59,0.08)] ${
+                  isExiting ? "cart-line-exit pointer-events-none" : ""
+                }`}
               >
                 <div className="grid aspect-square place-items-center overflow-hidden rounded-[22px] border border-beige/40 bg-cream">
                   <ProductImage
@@ -374,27 +403,30 @@ export function CartPage() {
                     <div className="inline-flex items-center rounded-full border border-beige/70 bg-cream">
                       <button
                         type="button"
-                        className="grid h-11 w-11 place-items-center text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.9]"
+                        className="grid h-11 w-11 place-items-center text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.9] disabled:opacity-45"
                         aria-label={t.cart.decreaseQuantity(line.product.name)}
-                        onClick={() => updateQuantity(line.product.id, line.quantity - 1)}
+                        disabled={isExiting}
+                        onClick={() => updateCartLineQuantity(line.product.id, line.quantity - 1)}
                       >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="min-w-8 text-center text-sm font-semibold text-ink">{line.quantity}</span>
+                      <span key={`${line.product.id}-${line.quantity}`} className="quantity-pop min-w-8 text-center text-sm font-semibold text-ink">{line.quantity}</span>
                       <button
                         type="button"
-                        className="grid h-11 w-11 place-items-center text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.9]"
+                        className="grid h-11 w-11 place-items-center text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.9] disabled:opacity-45"
                         aria-label={t.cart.increaseQuantity(line.product.name)}
-                        onClick={() => updateQuantity(line.product.id, line.quantity + 1)}
+                        disabled={isExiting}
+                        onClick={() => updateCartLineQuantity(line.product.id, line.quantity + 1)}
                       >
                         <Plus className="h-3.5 w-3.5" />
                       </button>
                     </div>
                     <button
                       type="button"
-                      className="grid h-11 w-11 place-items-center rounded-full bg-stone-100 text-muted transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.92]"
+                      className="grid h-11 w-11 place-items-center rounded-full bg-stone-100 text-muted transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.92] disabled:opacity-45"
                       aria-label={t.cart.remove(line.product.name)}
-                      onClick={() => updateQuantity(line.product.id, 0)}
+                      disabled={isExiting}
+                      onClick={() => updateCartLineQuantity(line.product.id, 0)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -404,7 +436,7 @@ export function CartPage() {
             );
           })
         ) : (
-          <div className="rounded-[30px] border border-beige/55 bg-cream px-6 py-11 text-center shadow-soft">
+          <div className="rounded-[30px] border border-beige/55 bg-cream px-6 py-11 text-center shadow-soft md:col-span-2">
             <p className="text-[1.35rem] font-semibold leading-tight text-ink">{t.cart.emptyTitle}</p>
             <p className="mx-auto mt-3 max-w-[18rem] text-[15px] leading-7 text-muted">{t.cart.emptyDescription}</p>
             <Link
@@ -418,7 +450,7 @@ export function CartPage() {
       </section>
 
       {cart.lines.length > 0 ? (
-        <section className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-beige/60 bg-cream/95 px-5 pb-5 pt-4 backdrop-blur">
+        <section className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-beige/60 bg-cream/95 px-5 pb-5 pt-4 backdrop-blur md:max-w-3xl md:px-8 lg:max-w-4xl">
           <div className="space-y-2 text-sm">
             <div className="flex justify-between text-muted">
               <span>{t.cart.subtotal}</span>
@@ -440,7 +472,7 @@ export function CartPage() {
       ) : null}
 
       {isCheckoutOpen ? (
-        <section className="fixed inset-0 z-50 mx-auto flex h-[100dvh] w-full max-w-md flex-col bg-cream" aria-label={t.cart.checkoutTitle} aria-modal="true" role="dialog">
+        <section className="checkout-panel-enter fixed inset-0 z-50 mx-auto flex h-[100dvh] w-full max-w-md flex-col bg-cream md:inset-y-6 md:h-auto md:max-w-2xl md:rounded-[32px] md:shadow-[0_24px_70px_rgba(74,67,59,0.18)]" aria-label={t.cart.checkoutTitle} aria-modal="true" role="dialog">
           <div className="flex shrink-0 items-center justify-between border-b border-beige/45 px-5 pb-4 pt-[calc(env(safe-area-inset-top)+1rem)]">
             <h2 className="text-[1.65rem] font-semibold leading-none text-ink">{submittedOrder ? t.cart.orderSubmitted : t.cart.checkoutTitle}</h2>
             <button type="button" className="grid h-11 w-11 place-items-center rounded-full bg-stone-100 text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.94]" aria-label={t.filters.close} onClick={() => setIsCheckoutOpen(false)}>
@@ -449,8 +481,8 @@ export function CartPage() {
           </div>
 
           {submittedOrder ? (
-            <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-              <div className="grid h-16 w-16 place-items-center rounded-full bg-[#E8F3EA] text-[#2C7A46]">
+            <div className="checkout-step-enter flex flex-1 flex-col items-center justify-center px-6 text-center">
+              <div className="add-success-pop grid h-16 w-16 place-items-center rounded-full bg-[#E8F3EA] text-[#2C7A46]">
                 <CheckCircle2 className="h-8 w-8" strokeWidth={2.4} />
               </div>
               <p className="mt-5 text-2xl font-semibold text-ink">{t.cart.reviewStatus}</p>
@@ -497,7 +529,7 @@ export function CartPage() {
                     (checkoutStep === "payment" && (step === "contact" || step === "address"));
 
                   return (
-                    <div key={step} className={`rounded-full px-2 py-2 text-center text-[12px] font-semibold ${isActive || isDone ? "bg-ink text-cream" : "bg-stone-100 text-muted"}`}>
+                    <div key={step} className={`rounded-full px-2 py-2 text-center text-[12px] font-semibold transition-colors duration-200 ease-[var(--ease-out-ui)] ${isActive || isDone ? "bg-ink text-cream" : "bg-stone-100 text-muted"}`}>
                       {index + 1}. {t.cart.steps[step]}
                     </div>
                   );
@@ -505,27 +537,27 @@ export function CartPage() {
               </div>
 
               {checkoutStep === "contact" ? (
-                <section className="mt-6">
+                <section key="contact" className="checkout-step-enter mt-6">
                   <h3 className="text-base font-semibold text-ink">{t.cart.contactTitle}</h3>
                   <div className="mt-4 space-y-3">
                     <div>
                       <input
                         aria-invalid={Boolean(checkoutErrors.name)}
                         aria-describedby={checkoutErrors.name ? "checkout-name-error" : undefined}
-                        className={`min-h-12 w-full rounded-2xl border bg-cream px-4 text-[15px] font-medium text-ink outline-none placeholder:text-muted ${
+                        className={`min-h-12 w-full rounded-2xl border bg-cream px-4 text-[15px] font-medium text-ink outline-none transition-colors duration-200 ease-[var(--ease-out-ui)] placeholder:text-muted focus:border-blue/80 ${
                           checkoutErrors.name ? "border-red-300 bg-red-50/45" : "border-beige/60"
                         }`}
                         placeholder={t.cart.customerName}
                         value={checkoutForm.name}
                         onChange={(event) => updateCheckoutField("name", event.target.value)}
                       />
-                      {checkoutErrors.name ? <p id="checkout-name-error" className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.name}</p> : null}
+                      {checkoutErrors.name ? <p id="checkout-name-error" className="motion-error-enter mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.name}</p> : null}
                     </div>
                     <div>
                       <input
                         aria-invalid={Boolean(checkoutErrors.contact)}
                         aria-describedby={checkoutErrors.contact ? "checkout-contact-error" : undefined}
-                        className={`min-h-12 w-full rounded-2xl border bg-cream px-4 text-[15px] font-medium text-ink outline-none placeholder:text-muted ${
+                        className={`min-h-12 w-full rounded-2xl border bg-cream px-4 text-[15px] font-medium text-ink outline-none transition-colors duration-200 ease-[var(--ease-out-ui)] placeholder:text-muted focus:border-blue/80 ${
                           checkoutErrors.contact ? "border-red-300 bg-red-50/45" : "border-beige/60"
                         }`}
                         inputMode="tel"
@@ -533,14 +565,14 @@ export function CartPage() {
                         value={checkoutForm.contact}
                         onChange={(event) => updateCheckoutField("contact", event.target.value)}
                       />
-                      {checkoutErrors.contact ? <p id="checkout-contact-error" className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.contact}</p> : null}
+                      {checkoutErrors.contact ? <p id="checkout-contact-error" className="motion-error-enter mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.contact}</p> : null}
                     </div>
                   </div>
                 </section>
               ) : null}
 
               {checkoutStep === "address" ? (
-                <section className="mt-6">
+                <section key="address" className="checkout-step-enter mt-6">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-base font-semibold text-ink">{t.cart.shippingAddress}</h3>
                     <div className="inline-flex rounded-full border border-beige/55 bg-cream p-0.5">
@@ -563,7 +595,7 @@ export function CartPage() {
                     <textarea
                       aria-invalid={Boolean(checkoutErrors.addressLine)}
                       aria-describedby={checkoutErrors.addressLine ? "checkout-address-error" : undefined}
-                      className={`min-h-20 w-full resize-none rounded-2xl border bg-cream px-4 py-3 text-[15px] font-medium leading-6 text-ink outline-none placeholder:text-muted ${
+                      className={`min-h-20 w-full resize-none rounded-2xl border bg-cream px-4 py-3 text-[15px] font-medium leading-6 text-ink outline-none transition-colors duration-200 ease-[var(--ease-out-ui)] placeholder:text-muted focus:border-blue/80 ${
                         checkoutErrors.addressLine ? "border-red-300 bg-red-50/45" : "border-beige/60"
                       }`}
                       placeholder={t.cart.addressLine}
@@ -583,7 +615,7 @@ export function CartPage() {
                     onChange={updateThailandAddress}
                   />
 
-                  {checkoutErrors.addressLine ? <p id="checkout-address-error" className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.addressLine}</p> : null}
+                  {checkoutErrors.addressLine ? <p id="checkout-address-error" className="motion-error-enter mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.addressLine}</p> : null}
 
                   <div className="mt-4 rounded-[24px] border border-beige/55 bg-[#FDFBF7] p-4">
                     <div className="flex items-start gap-3">
@@ -600,7 +632,7 @@ export function CartPage() {
               ) : null}
 
               {checkoutStep === "payment" ? (
-                <section className="mt-6">
+                <section key="payment" className="checkout-step-enter mt-6">
                   <div className="rounded-[24px] border border-beige/55 bg-[#FDFBF7] p-4">
                     <div className="flex justify-between text-sm text-muted">
                       <span>{t.cart.subtotal}</span>
@@ -642,7 +674,7 @@ export function CartPage() {
                       onChange={(event) => updateSlipFile(event.target.files?.[0] ?? null)}
                     />
                   </label>
-                  {checkoutErrors.slipName ? <p className="mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.slipName}</p> : null}
+                  {checkoutErrors.slipName ? <p className="motion-error-enter mt-2 text-[13px] font-medium leading-5 text-red-700">{checkoutErrors.slipName}</p> : null}
                   <p className="mt-2 text-[13px] font-medium leading-5 text-muted">{t.cart.slipRequirement}</p>
                 </section>
               ) : null}

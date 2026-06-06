@@ -10,7 +10,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   }, [error]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col bg-cream px-5 py-[calc(env(safe-area-inset-top)+2rem)] text-ink">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col bg-cream px-5 py-[calc(env(safe-area-inset-top)+2rem)] text-ink md:max-w-3xl md:px-8">
       <div className="mt-16 rounded-[28px] border border-beige/55 bg-[#FDFBF7] px-5 py-7 shadow-soft">
         <p className="text-sm font-semibold text-muted">RUBHIW</p>
         <h1 className="mt-3 text-[2rem] font-semibold leading-tight tracking-normal">โหลดหน้านี้ไม่สำเร็จ</h1>

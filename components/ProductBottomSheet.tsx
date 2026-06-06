@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Share2 } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Share2 } from "lucide-react";
 import { showAppToast } from "@/components/AppToast";
 import { useCart } from "@/components/CartProvider";
 import { ProductImage } from "@/components/ProductImage";
@@ -190,7 +190,7 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
 
       <section
         ref={sheetPanelRef}
-        className={`fixed inset-0 z-50 mx-auto w-full max-w-md overflow-hidden bg-[#F6F1EA] transition duration-300 ease-[var(--ease-out-ui)] ${
+        className={`fixed inset-0 z-50 mx-auto w-full max-w-md overflow-hidden bg-[#F6F1EA] transition duration-300 ease-[var(--ease-out-ui)] md:inset-y-6 md:max-w-3xl md:rounded-[32px] ${
           isOpen ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
         }`}
         aria-label={t.products.detailsAria}
@@ -220,7 +220,7 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
               </button>
             </div>
 
-            <div className="h-[44vh] min-h-[18rem] overflow-hidden bg-[radial-gradient(circle_at_50%_28%,#FDFBF7_0%,#F0E7DC_58%,#DCD0C2_100%)]">
+            <div className="h-[44vh] min-h-[18rem] overflow-hidden bg-[radial-gradient(circle_at_50%_28%,#FDFBF7_0%,#F0E7DC_58%,#DCD0C2_100%)] md:h-[44%]">
               <ProductImage
                 src={product.image_url}
                 alt={`${product.brand} ${product.name}`}
@@ -230,7 +230,7 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
               />
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 flex h-[56vh] flex-col overflow-hidden rounded-t-[30px] bg-[#FDFBF7] shadow-[0_-18px_45px_rgba(74,67,59,0.14)]">
+            <div className="absolute inset-x-0 bottom-0 flex h-[56vh] flex-col overflow-hidden rounded-t-[30px] bg-[#FDFBF7] shadow-[0_-18px_45px_rgba(74,67,59,0.14)] md:h-[56%]">
               <div className="flex shrink-0 justify-center pt-3">
                 <span className="h-1.5 w-20 rounded-full bg-[#C9C5BF]" />
               </div>
@@ -306,7 +306,10 @@ export function ProductBottomSheet({ product, onClose }: ProductBottomSheetProps
                       {t.products.addStates.adding}
                     </span>
                   ) : addStatus === "added" ? (
-                    t.products.addStates.added
+                    <span className="add-success-pop inline-flex items-center justify-center gap-2">
+                      <CheckCircle2 className="h-5 w-5" strokeWidth={2.4} />
+                      {t.products.addStates.added}
+                    </span>
                   ) : !availability.isPurchasable ? (
                     availabilityLabel
                   ) : (

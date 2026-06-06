@@ -59,12 +59,12 @@ export function HeroBanner() {
             );
           })}
 
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-ink/12 px-1.5 py-1 backdrop-blur-[1px]">
             {slides.map((slide, index) => (
               <button
                 key={slide.id}
                 type="button"
-                className="grid h-11 w-11 place-items-center rounded-full transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.92]"
+                className="grid h-5 w-5 place-items-center rounded-full transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.92]"
                 aria-label={t.heroSlideLabel(index + 1)}
                 aria-pressed={index === activeSlide}
                 onClick={() => setActiveSlide(index)}

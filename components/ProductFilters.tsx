@@ -39,6 +39,7 @@ export function ProductFilters({
 }: ProductFiltersProps) {
   const { categoryLabel, t } = useI18n();
   const [sheet, setSheet] = useState<"all" | "category" | "status" | "price" | "sort" | null>(null);
+  const [isSortPulsing, setIsSortPulsing] = useState(false);
   const sheetPanelRef = useRef<HTMLElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -145,11 +146,26 @@ export function ProductFilters({
 
   const resetFilters = () => {
     onFiltersChange({ sortBy: "featured", statuses: [], priceRanges: [] });
+    setIsSortPulsing(true);
   };
 
   const updateFilters = (nextFilters: ProductFilterState) => {
+    if (nextFilters.sortBy !== filters.sortBy) {
+      setIsSortPulsing(true);
+    }
+
     onFiltersChange(nextFilters);
   };
+
+  useEffect(() => {
+    if (!isSortPulsing) {
+      return;
+    }
+
+    const pulseTimer = window.setTimeout(() => setIsSortPulsing(false), 240);
+
+    return () => window.clearTimeout(pulseTimer);
+  }, [isSortPulsing]);
 
   return (
     <>
@@ -169,7 +185,13 @@ export function ProductFilters({
           />
           <FilterButton label={statusLabel} hasChevron isActive={filters.statuses.length > 0} onClick={() => setSheet("status")} />
           <FilterButton label={priceLabel} hasChevron isActive={filters.priceRanges.length > 0} onClick={() => setSheet("price")} />
-          <FilterButton label={sortLabels[filters.sortBy]} hasChevron isActive={filters.sortBy !== "featured"} onClick={() => setSheet("sort")} />
+          <FilterButton
+            label={sortLabels[filters.sortBy]}
+            hasChevron
+            isActive={filters.sortBy !== "featured"}
+            isPulsing={isSortPulsing}
+            onClick={() => setSheet("sort")}
+          />
         </div>
       </div>
 
@@ -277,12 +299,14 @@ function FilterButton({
   hasChevron = false,
   icon,
   isActive = false,
+  isPulsing = false,
   label,
   onClick,
 }: {
   hasChevron?: boolean;
   icon?: React.ReactNode;
   isActive?: boolean;
+  isPulsing?: boolean;
   label: string;
   onClick: () => void;
 }) {
@@ -291,7 +315,7 @@ function FilterButton({
       type="button"
       className={`inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-[15px] font-semibold shadow-[0_8px_20px_rgba(74,67,59,0.04)] transition duration-200 ease-[var(--ease-out-ui)] active:scale-[0.97] ${
         isActive ? "border-blue bg-blue/70 text-ink" : "border-beige/75 bg-cream text-ink"
-      }`}
+      } ${isPulsing ? "sort-chip-pulse" : ""}`}
       onClick={onClick}
     >
       {icon}
@@ -331,10 +355,10 @@ function Sheet({
         ref={panelRef}
         className={
           fullScreen
-            ? `fixed inset-0 z-50 mx-auto h-[100dvh] w-full max-w-md overflow-hidden bg-cream transition-opacity duration-200 ease-[var(--ease-out-ui)] ${
+            ? `fixed inset-0 z-50 mx-auto h-[100dvh] w-full max-w-md overflow-hidden bg-cream transition-opacity duration-200 ease-[var(--ease-out-ui)] md:max-w-xl ${
                 isOpen ? "opacity-100" : "pointer-events-none opacity-0"
               }`
-            : `fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md overflow-hidden rounded-t-[26px] bg-[#FDFBF7] shadow-[0_-18px_45px_rgba(74,67,59,0.16)] transition duration-300 ease-[var(--ease-out-ui)] ${
+            : `fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md overflow-hidden rounded-t-[26px] bg-[#FDFBF7] shadow-[0_-18px_45px_rgba(74,67,59,0.16)] transition duration-300 ease-[var(--ease-out-ui)] md:max-w-xl ${
                 isOpen ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-5 opacity-0"
               } ${compact ? "" : "top-auto"}`
         }

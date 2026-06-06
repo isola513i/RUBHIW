@@ -113,7 +113,7 @@ export function TrackOrderPage() {
   };
 
   return (
-    <main className="mx-auto min-h-screen max-w-md px-5 pb-12">
+    <main className="mx-auto min-h-screen max-w-md px-5 pb-12 md:max-w-3xl md:px-8">
       <Header />
 
       <section className="pt-7">
@@ -124,7 +124,7 @@ export function TrackOrderPage() {
         </p>
       </section>
 
-      <form className="mt-7 space-y-3" noValidate onSubmit={submitLookup}>
+      <form className="mt-7 grid gap-3 md:grid-cols-[1fr_1fr_auto]" noValidate onSubmit={submitLookup}>
         <div>
           <input
             aria-invalid={Boolean(fieldErrors.orderId)}
@@ -152,7 +152,7 @@ export function TrackOrderPage() {
           {fieldErrors.contact ? <p className="mt-2 px-1 text-sm font-semibold text-red-700">{fieldErrors.contact}</p> : null}
         </div>
         <button
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-ink px-5 py-3.5 text-sm font-semibold text-cream transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98] disabled:opacity-45"
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-ink px-5 py-3.5 text-sm font-semibold text-cream transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.98] disabled:opacity-45 md:w-auto"
           disabled={isLoading}
           type="submit"
         >
@@ -164,7 +164,7 @@ export function TrackOrderPage() {
       {error ? <p className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-700">{error}</p> : null}
 
       {orders.length > 0 ? (
-        <section className="mt-6 space-y-3">
+        <section className="mt-6 grid gap-3 md:grid-cols-2">
           {orders.map((order) => (
             <article key={order.orderId} className="rounded-[28px] border border-beige/60 bg-cream p-5 shadow-soft">
               <div className="flex items-start justify-between gap-4">

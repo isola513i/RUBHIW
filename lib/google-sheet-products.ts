@@ -56,6 +56,28 @@ export function mapSheetRowToProduct(row: SheetRow): Product | null {
   };
 }
 
+function getUniqueProducts(products: Product[]) {
+  const seenIds = new Set<string>();
+  const duplicateIds = new Set<string>();
+  const uniqueProducts: Product[] = [];
+
+  for (const product of products) {
+    if (seenIds.has(product.id)) {
+      duplicateIds.add(product.id);
+      continue;
+    }
+
+    seenIds.add(product.id);
+    uniqueProducts.push(product);
+  }
+
+  if (duplicateIds.size > 0) {
+    console.warn(`[products] Skipped duplicate product ids from sheet: ${Array.from(duplicateIds).join(", ")}`);
+  }
+
+  return uniqueProducts;
+}
+
 export async function fetchSheetProducts(): Promise<Product[]> {
   try {
     const response = await fetch(SHEET_CSV_URL, {
@@ -79,8 +101,9 @@ export async function fetchSheetProducts(): Promise<Product[]> {
     const products = parsed.data
       .map(mapSheetRowToProduct)
       .filter((product): product is Product => product !== null);
+    const uniqueProducts = getUniqueProducts(products);
 
-    return products.length > 0 ? products : mockProducts;
+    return uniqueProducts.length > 0 ? uniqueProducts : mockProducts;
   } catch {
     return mockProducts;
   }

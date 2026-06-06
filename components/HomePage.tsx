@@ -177,7 +177,7 @@ export function HomePage({ products, categories }: HomePageProps) {
 
   return (
     <>
-      <main className="mx-auto min-h-screen max-w-md px-5 pb-10">
+      <main className="mx-auto min-h-screen max-w-md px-5 pb-10 md:max-w-4xl md:px-8 lg:max-w-5xl">
         <Header searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} />
         <HeroBanner />
         <ProductFilters

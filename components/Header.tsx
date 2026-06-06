@@ -6,7 +6,7 @@ import { ChevronRight, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useCart } from "@/components/CartProvider";
 import { useI18n, type Language } from "@/lib/i18n";
 
-const popularSearches = ["anua", "laneige", "rom&nd", "mixsoon", "torriden", "samyang", "jelly", "sunscreen"];
+const popularSearches = ["tocobo", "dongsung", "prettyskin", "primer", "hand cream", "ampoule", "egg planet", "shampoo"];
 const languageOptions: Array<{ value: Language; label: string }> = [
   { value: "th", label: "TH" },
   { value: "en", label: "EN" },
@@ -85,7 +85,7 @@ export function Header({ searchQuery, onSearchQueryChange }: HeaderProps) {
   return (
     <>
       <header
-        className="fixed left-1/2 top-0 z-30 flex min-h-[60px] w-full max-w-md -translate-x-1/2 items-center justify-between border-b border-beige/50 bg-cream/95 px-5 backdrop-blur"
+        className="fixed left-1/2 top-0 z-30 flex min-h-[60px] w-full max-w-md -translate-x-1/2 items-center justify-between border-b border-beige/50 bg-cream/95 px-5 backdrop-blur md:max-w-4xl md:px-8 lg:max-w-5xl"
       >
         <div
           className={`absolute inset-0 flex items-center px-5 transition duration-200 ease-[var(--ease-out-ui)] ${
@@ -156,7 +156,7 @@ export function Header({ searchQuery, onSearchQueryChange }: HeaderProps) {
         }`}
         aria-label={t.header.searchPanel}
       >
-        <div className="mx-auto flex min-h-screen max-w-md flex-col px-5 py-4">
+        <div className="mx-auto flex min-h-screen max-w-md flex-col px-5 py-4 md:max-w-2xl md:px-8">
           <form className="flex items-center gap-3" role="search" onSubmit={submitSearch}>
             <div className="flex h-11 flex-1 items-center rounded-full bg-[#F3F3F3] pl-3 pr-4 text-ink">
               <span className="grid h-6 w-6 place-items-center text-[#56514C]">
@@ -198,11 +198,14 @@ export function Header({ searchQuery, onSearchQueryChange }: HeaderProps) {
           <div className="mt-12">
             <p className="text-sm font-medium text-muted">{t.header.popularSearches}</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              {popularSearches.map((term) => (
+              {popularSearches.map((term, index) => (
                 <button
                   key={term}
                   type="button"
-                  className="min-h-11 rounded-full bg-stone-100 px-4 py-2.5 text-base font-medium text-ink transition-transform duration-200 ease-[var(--ease-out-ui)] active:scale-[0.96]"
+                  className={`min-h-11 rounded-full bg-stone-100 px-4 py-2.5 text-base font-medium text-ink transition duration-200 ease-[var(--ease-out-ui)] active:scale-[0.96] ${
+                    isSearchOpen ? "search-chip-enter-active" : "search-chip-enter"
+                  }`}
+                  style={{ transitionDelay: isSearchOpen ? `${index * 35}ms` : "0ms" }}
                   onClick={() => selectSearchTerm(term)}
                 >
                   {term}
@@ -222,7 +225,7 @@ export function Header({ searchQuery, onSearchQueryChange }: HeaderProps) {
       />
 
       <aside
-        className={`fixed bottom-0 right-0 top-0 z-50 w-[82vw] max-w-xs bg-cream px-8 py-6 shadow-[0_0_40px_rgba(74,67,59,0.14)] transition-transform duration-300 ease-[var(--ease-out-ui)] ${
+        className={`fixed bottom-0 right-0 top-0 z-50 w-[82vw] max-w-xs bg-cream px-8 py-6 shadow-[0_0_40px_rgba(74,67,59,0.14)] transition-transform duration-300 ease-[var(--ease-out-ui)] md:w-[24rem] md:max-w-sm ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
         aria-label={t.header.primaryMenu}
